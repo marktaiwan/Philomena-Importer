@@ -4,8 +4,8 @@
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
-// @homepageURL  https://github.com/marktaiwan/Philomena-Image-Data-Copier
-// @supportURL   https://github.com/marktaiwan/Derpibooru-Image-Preloader/issues
+// @homepageURL  https://github.com/marktaiwan/Philomena-Importer
+// @supportURL   https://github.com/marktaiwan/Philomena-Importer/issues
 // @match        https://ponybooru.org/images/new
 // @inject-into  content
 // @grant        GM_xmlhttpRequest
@@ -17,10 +17,6 @@
 
 function $(selector, parent = document) {
   return parent.querySelector(selector);
-}
-
-function $$(selector, parent = document) {
-  return parent.querySelectorAll(selector);
 }
 
 async function importImage(imageID) {
@@ -46,16 +42,8 @@ async function importImage(imageID) {
   // add tags
   tagInput.value = tags.join(', ');
 
-  // add file url
-  // $('#image_scraper_url').value = fileURL;
-
   // add description
   $('#image_description').value = description;
-
-  // click the fetch button
-  // window.requestAnimationFrame(() => {
-  //   $('#js-scraper-preview').click();
-  // });
 
   const fileField = $('#image_image');
   const imgBlob = await fetchImage(fileURL);
@@ -108,7 +96,6 @@ function fetchImageData(url) {
       },
       onload: (resp) => resolve(JSON.parse(resp.responseText)),
       onerror: console.log
-      // onerror: (e) => console.log('We made a fucky wucky')
     });
   });
 }
