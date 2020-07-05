@@ -1,19 +1,31 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
-// @version      1.0.0
+// @version      1.1.0
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Philomena-Importer
 // @supportURL   https://github.com/marktaiwan/Philomena-Importer/issues
 // @match        https://ponybooru.org/images/new
+// @match        https://ponybooru.org/settings/edit
 // @inject-into  content
 // @grant        GM_xmlhttpRequest
 // @noframes
+// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js?v1.2.2
 // ==/UserScript==
 
 (function () {
 'use strict';
+const config = ConfigManager('Derpibooru Image Importer', 'image_importer');
+config.registerSetting({
+  title: 'Add import message to description.',
+  key: 'indicate_import',
+  description: 'Prefix the description with a link to the original derpibooru post.',
+  type: 'checkbox',
+  defaultValue: false
+});
+
+const INDICATE_IMPORT = config.getEntry('indicate_import');
 
 function $(selector, parent = document) {
   return parent.querySelector(selector);
@@ -43,7 +55,12 @@ async function importImage(imageID) {
   tagInput.value = tags.join(', ');
 
   // add description
-  $('#image_description').value = description;
+  let msg = '';
+  if (INDICATE_IMPORT) {
+    msg = `"[Imported from Derpibooru]":https://derpibooru.org/images/${imageID}`;
+    if (description !== '') msg += '\n\n';
+  }
+  $('#image_description').value = msg + description;
 
   const fileField = $('#image_image');
   const imgBlob = await fetchImage(fileURL);
