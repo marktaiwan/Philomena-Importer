@@ -98,7 +98,7 @@ async function importImage(imageID) {
   importButton.innerText = 'Loading...';
 
   // fetch image metadata from Derpi
-  const json = await fetchImageData(`https://derpibooru.org/api/v1/json/images/${imageID}`);
+  const json = await makeRequest('https://derpibooru.org/api/v1/json/images/' + imageID).then(resp => JSON.parse(resp.responseText));
   const fileURL = json.image.representations.full;
   const {description, tags, mime_type: mimeType, source_url: source, name: fileName} = json.image;
   const tagInput = $('#image_tag_input');
@@ -135,7 +135,7 @@ async function importImage(imageID) {
 
   // fetch full image
   const fileField = $('#image_image');
-  const imgBlob = await fetchImage(fileURL);
+  const imgBlob = await makeRequest(fileURL, 'blob').then(resp => resp.response);
 
   // create a file list to be assigned to input
   const list = new DataTransfer();
@@ -176,7 +176,7 @@ function initUI(){
   });
 }
 
-function fetchImageData(url) {
+function makeRequest(url, responseType = 'text') {
   return new Promise((resolve) => {
     GM_xmlhttpRequest({
       url: url,
@@ -184,25 +184,11 @@ function fetchImageData(url) {
       headers: {
         'User-Agent': navigator.userAgent
       },
-      onload: (resp) => resolve(JSON.parse(resp.responseText)),
+      responseType,
+      onload: resolve,
       onerror: console.log
     });
   });
-}
-
-function fetchImage(fileURL) {
-  return new Promise((resolve => {
-    GM_xmlhttpRequest({
-      url: fileURL,
-      method: 'GET',
-      headers: {
-        'User-Agent': navigator.userAgent
-      },
-      responseType: 'blob',
-      onload: (resp) => resolve(resp.response),
-      onerror: console.log
-    });
-  }));
 }
 
 function getImageId(url) {
