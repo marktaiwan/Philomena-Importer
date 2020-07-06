@@ -18,7 +18,7 @@
 'use strict';
 const config = ConfigManager('Derpibooru Image Importer', 'image_importer');
 config.registerSetting({
-  title: 'Add import message to description.',
+  title: 'Add import message to description',
   key: 'indicate_import',
   description: 'Prefix the description with a link to the original derpibooru post.',
   type: 'checkbox',
