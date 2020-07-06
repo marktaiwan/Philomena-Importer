@@ -17,6 +17,7 @@
 (function () {
 'use strict';
 
+const origDomain = 'https://derpibooru.org';
 const DEFAULT_TAG_BLACKLIST = [
   'adventure in the comments',
   'changelings in the comments',
@@ -40,6 +41,20 @@ config.registerSetting({
   type: 'checkbox',
   defaultValue: false
 });
+config.registerSetting({
+  title: 'Link correction',
+  key: 'link_fix',
+  description: 'Rewrite original on-site links in the description to properly point to Derpibooru.',
+  type: 'checkbox',
+  defaultValue: true
+});
+config.registerSetting({
+  title: 'Use Derpi as source',
+  key: 'derpi_source',
+  description: 'Use Derpibooru as source link if the imported image lacks one.',
+  type: 'checkbox',
+  defaultValue: false
+});
 const tagFieldset = config.addFieldset(
   'Tag Filtering',
   'tag_filtering'
@@ -59,6 +74,8 @@ const tagEntry = tagFieldset.registerSetting({
 });
 
 const INDICATE_IMPORT = config.getEntry('indicate_import');
+const LINK_FIX = config.getEntry('link_fix');
+const DERPI_SOURCE = config.getEntry('derpi_source');
 const TAG_FILTER = config.getEntry('tag_filter');
 
 /*
@@ -111,7 +128,9 @@ async function importImage(imageID) {
   }
 
   // add source
-  $('#image_source_url').value = source;
+  $('#image_source_url').value = (DERPI_SOURCE && source === '')
+    ? `${origDomain}/images/${imageID}`
+    : source;
 
   // add tags
   let addedTags;
@@ -126,12 +145,7 @@ async function importImage(imageID) {
   tagInput.value = addedTags.join(', ');
 
   // add description
-  let msg = '';
-  if (INDICATE_IMPORT) {
-    msg = `"[Imported from Derpibooru]":https://derpibooru.org/images/${imageID}`;
-    if (description !== '') msg += '\n\n';
-  }
-  $('#image_description').value = msg + description;
+  $('#image_description').value = processDescription(description, imageID);
 
   // fetch full image
   const fileField = $('#image_image');
@@ -174,6 +188,32 @@ function initUI(){
     const url = input.value.trim();
     importImage(getImageId(url));
   });
+}
+
+function processDescription(original, imageID) {
+  const emptyDesc = (original === '');
+  let desc = original;
+
+  if (LINK_FIX && !emptyDesc) {
+    // rewrite in-site links
+    desc = desc.replace(
+      /(".+?"):(\/)/g,
+      (matched, text) => `${text}:${origDomain}/`
+    );
+    // rewrite image links
+    // match image links, turn embeds into links as well.
+    desc = desc.replace(
+      /(?:>>(\d+))[pts]?/g,
+      (matched, id) => `"[==${matched}==]":${origDomain}/images/${id}`
+    );
+  }
+
+  if (INDICATE_IMPORT) {
+    const msg = `"[Imported from Derpibooru]":${origDomain}/images/${imageID}`;
+    desc = emptyDesc ? msg : msg + '\n\n' + desc;
+  }
+
+  return desc;
 }
 
 function makeRequest(url, responseType = 'text') {
