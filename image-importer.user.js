@@ -85,6 +85,7 @@ async function importImage(imageID) {
 
 function initUI(){
   const fetchButton = $('#js-scraper-preview');
+  if (!fetchButton) return;
 
   const importButton = document.createElement('button');
   importButton.setAttribute('class', 'button button--separate-left');
