@@ -5,4 +5,4 @@ Requires [Violentmonkey](https://violentmonkey.github.io/) or compatible userscr
 
 ## Screenshot
 
-[![Screenshot](../master/screenshots/settings.png)](https://raw.githubusercontent.com/marktaiwan/Philomena-Importer/master/screenshots/settings.png)
+![Screenshot](https://raw.githubusercontent.com/marktaiwan/Philomena-Importer/master/screnshots/settings.png)
