@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
-// @version      1.1.0
+// @version      1.1.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Philomena-Importer
 // @supportURL   https://github.com/marktaiwan/Philomena-Importer/issues
-// @match        https://ponybooru.org/images/new
-// @match        https://ponybooru.org/settings/edit
+// @match        *://*.ponybooru.org/images/new
+// @match        *://*.ponybooru.org/settings/edit
 // @inject-into  content
 // @grant        GM_xmlhttpRequest
 // @noframes
