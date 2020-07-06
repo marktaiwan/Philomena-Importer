@@ -16,6 +16,22 @@
 
 (function () {
 'use strict';
+
+const DEFAULT_TAG_BLACKLIST = [
+  'adventure in the comments',
+  'changelings in the comments',
+  'clopfic in the comments',
+  'debate in the comments',
+  'derail in the comments',
+  'discussion in the comments',
+  'duckery in the comments',
+  'politics in the comments',
+  'shipping war in the comments',
+  'song in the comments',
+  'story in the comments',
+  'translated in the comments',
+];
+
 const config = ConfigManager('Derpibooru Image Importer', 'image_importer');
 config.registerSetting({
   title: 'Add import message to description',
@@ -24,8 +40,54 @@ config.registerSetting({
   type: 'checkbox',
   defaultValue: false
 });
+const tagFieldset = config.addFieldset(
+  'Tag Filtering',
+  'tag_filtering'
+);
+tagFieldset.registerSetting({
+  title: 'Enable tag filtering',
+  key: 'tag_filter',
+  type: 'checkbox',
+  defaultValue: true
+});
+const tagEntry = tagFieldset.registerSetting({
+  title: 'Remove these tags:',
+  key: 'tag_blacklist',
+  description: 'These tags will be removed during import. Comma separated.',
+  type: 'text',
+  defaultValue: DEFAULT_TAG_BLACKLIST.join(', ')
+});
 
 const INDICATE_IMPORT = config.getEntry('indicate_import');
+const TAG_FILTER = config.getEntry('tag_filter');
+
+/*
+ *  Perform coding surgery to change input field into textarea
+ */
+const oldInput = $('input', tagEntry);
+const newText = document.createElement('textarea');
+newText.classList.add('input');
+newText.style.height = '100px';
+newText.style.width = '100%';
+
+// copy over attributes
+newText.id = oldInput.id;
+newText.dataset.defaultValue = oldInput.dataset.defaultValue;
+newText.dataset.entryKey = oldInput.dataset.entryKey;
+newText.dataset.entryPropertyType = oldInput.dataset.entryPropertyType;
+newText.value = oldInput.value;
+
+// remove old attribute that conflicts with derpi4u
+oldInput.removeAttribute('data-entry-key');
+oldInput.removeAttribute('id');
+
+newText.addEventListener('change', () => {
+  oldInput.dispatchEvent(new Event('change'));
+});
+
+oldInput.insertAdjacentElement('afterend', newText);
+oldInput.classList.add('hidden');
+
 
 function $(selector, parent = document) {
   return parent.querySelector(selector);
@@ -52,7 +114,16 @@ async function importImage(imageID) {
   $('#image_source_url').value = source;
 
   // add tags
-  tagInput.value = tags.join(', ');
+  let addedTags;
+  if (TAG_FILTER) {
+    const filtered_tags = config.getEntry('tag_blacklist')
+      .split(',')
+      .map(tag => tag.trim());
+    addedTags = tags.filter(tag => !filtered_tags.includes(tag));
+  } else {
+    addedTags = tags;
+  }
+  tagInput.value = addedTags.join(', ');
 
   // add description
   let msg = '';
@@ -62,6 +133,7 @@ async function importImage(imageID) {
   }
   $('#image_description').value = msg + description;
 
+  // fetch full image
   const fileField = $('#image_image');
   const imgBlob = await fetchImage(fileURL);
 
