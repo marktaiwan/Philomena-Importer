@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
-// @version      1.2.1
+// @version      1.2.2
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -129,9 +129,11 @@ async function importImage(imageID) {
   }
 
   // add source
-  $('#image_source_url').value = (DERPI_SOURCE && source === '')
-    ? `${origDomain}/images/${imageID}`
-    : source;
+  $('#image_source_url').value = (source)
+    ? source
+    : (DERPI_SOURCE)
+      ? `${origDomain}/images/${imageID}`
+      : '';
 
   // add tags
   let addedTags;
