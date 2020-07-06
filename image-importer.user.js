@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
-// @version      1.2.2
+// @version      1.2.3
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -27,6 +27,7 @@ const DEFAULT_TAG_BLACKLIST = [
   'discussion in the comments',
   'duckery in the comments',
   'featured image',
+  'index get',
   'politics in the comments',
   'shipping war in the comments',
   'song in the comments',
