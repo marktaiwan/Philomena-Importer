@@ -113,7 +113,7 @@ function $(selector, parent = document) {
 }
 
 async function importImage(imageID) {
-  const importButton = $('#derpi_inport_button');
+  const importButton = $('#derpi_import_button');
   importButton.innerText = 'Loading...';
 
   // fetch image metadata from Derpi
@@ -181,7 +181,7 @@ function initUI(){
   importButton.setAttribute('class', 'button button--separate-left');
   importButton.type = 'button';
   importButton.innerText = 'Import from Derpi';
-  importButton.id = 'derpi_inport_button';
+  importButton.id = 'derpi_import_button';
   fetchButton.parentElement.append(importButton);
 
   importButton.addEventListener('click', (e) => {
