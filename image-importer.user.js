@@ -159,7 +159,7 @@ async function importImage(imageID) {
 
   // fetch full image
   const fileField = $('#image_image');
-  const imgBlob = await makeRequest(fileURL, 'blob').then(resp => resp.response);
+  const imgBlob = await makeRequest(fileURL, 'blob', progressCallback).then(resp => resp.response);
 
   // create a file list to be assigned to input
   const list = new DataTransfer();
@@ -221,7 +221,7 @@ function processDescription(original, imageID) {
   return desc;
 }
 
-function makeRequest(url, responseType = 'text') {
+function makeRequest(url, responseType = 'text', onprogress) {
   return new Promise((resolve) => {
     GM_xmlhttpRequest({
       url: url,
@@ -231,9 +231,20 @@ function makeRequest(url, responseType = 'text') {
       },
       responseType,
       onload: resolve,
-      onerror: console.log
+      onerror: console.log,
+      onprogress
     });
   });
+}
+
+function progressCallback(response) {
+  if (!response.lengthComputable || response.readyState !== 3) return;
+
+  const button = $('#derpi_import_button');
+  const {loaded, total} = response;
+  const percentage = Math.round((loaded / total) * 100);
+
+  button.innerText = `${percentage}%`;
 }
 
 function getImageId(url) {
