@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
-// @version      1.2.3
+// @version      1.2.4
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -151,6 +151,12 @@ async function importImage(imageID) {
   // add description
   $('#image_description').value = processDescription(description, imageID);
 
+  // revert tag editor
+  if (fancyEditor) {
+    // "Fancy Editor" button
+    $('.js-taginput-show').click();
+  }
+
   // fetch full image
   const fileField = $('#image_image');
   const imgBlob = await makeRequest(fileURL, 'blob').then(resp => resp.response);
@@ -163,12 +169,6 @@ async function importImage(imageID) {
 
   // dispatch change event to file input
   fileField.dispatchEvent(new Event('change'));
-
-  // revert tag editor
-  if (fancyEditor) {
-    // "Fancy Editor" button
-    $('.js-taginput-show').click();
-  }
 
   importButton.innerText = 'Import from Derpi';
 }
