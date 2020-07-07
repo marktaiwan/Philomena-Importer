@@ -170,7 +170,7 @@ async function importImage(imageID) {
   // dispatch change event to file input
   fileField.dispatchEvent(new Event('change'));
 
-  importButton.innerText = 'Import from Derpi';
+  importButton.innerText = 'Import';
 }
 
 function initUI(){
@@ -180,9 +180,10 @@ function initUI(){
   const importButton = document.createElement('button');
   importButton.setAttribute('class', 'button button--separate-left');
   importButton.type = 'button';
-  importButton.innerText = 'Import from Derpi';
+  importButton.innerText = 'Import';
   importButton.id = 'derpi_import_button';
-  fetchButton.parentElement.append(importButton);
+  importButton.style.width = '100px';
+  fetchButton.insertAdjacentElement('beforebegin', importButton);
 
   importButton.addEventListener('click', (e) => {
     e.stopPropagation();
