@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
-// @version      1.2.4
+// @version      1.2.5
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
