@@ -231,7 +231,10 @@ function makeRequest(url, responseType = 'text', onprogress) {
       },
       responseType,
       onload: resolve,
-      onerror: console.log,
+      onerror: (e) => {
+        $('#derpi_import_button').innerText = 'Error';
+        console.log(e);
+      },
       onprogress
     });
   });
