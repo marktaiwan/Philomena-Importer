@@ -289,6 +289,11 @@ function processDescription(originalDescription, imageID, booruData, imgJson) {
   if (INDICATE_IMPORT) {
     let msg = `"[Imported from ${prettyName}]":${primaryDomain}/images/${imageID}`;
     if (ORIG_UPLOAD_DATE) msg += `\nOriginal upload date: ${imgJson.created_at}`;
+
+    desc = emptyDesc ? msg
+      : msg
+        + '\n@==---------------==@\n\n'
+        + desc;
   }
 
   return desc;
