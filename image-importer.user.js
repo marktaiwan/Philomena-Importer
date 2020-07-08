@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.3.1
+// @version      1.3.2
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
