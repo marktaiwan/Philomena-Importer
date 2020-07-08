@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.3.0
+// @version      1.3.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -114,6 +114,12 @@ const tagEntry = tagFieldset.registerSetting({
   type: 'text',
   defaultValue: DEFAULT_TAG_BLACKLIST.join(', ')
 });
+
+// setting migration 1.2.5 -> 1.3.0
+if (config.getEntry('derpi_source') !== undefined) {
+  config.setEntry('origin_source', config.getEntry('derpi_source'));
+  config.deleteEntry('derpi_source');
+}
 
 const INDICATE_IMPORT = config.getEntry('indicate_import');
 const LINK_FIX = config.getEntry('link_fix');
