@@ -77,13 +77,6 @@ const config = ConfigManager(
   'Import image and tags from Philomena-based boorus.'
 );
 config.registerSetting({
-  title: 'Add import message to description',
-  key: 'indicate_import',
-  description: 'Prefix the description with a link to the original post.',
-  type: 'checkbox',
-  defaultValue: false
-});
-config.registerSetting({
   title: 'Link correction',
   key: 'link_fix',
   description: 'Rewrite on-site links in the description to properly point to the original site.',
@@ -94,6 +87,23 @@ config.registerSetting({
   title: 'Use origin as source',
   key: 'origin_source',
   description: 'Use the original post as source link if the imported image lacks one.',
+  type: 'checkbox',
+  defaultValue: false
+});
+const descFieldset = config.addFieldset(
+  'Description',
+  'indicate_fieldset',
+  'Add import message to image description. Prefix the description with a link to the original post.'
+);
+descFieldset.registerSetting({
+  title: 'Enable import message',
+  key: 'indicate_import',
+  type: 'checkbox',
+  defaultValue: false
+});
+descFieldset.registerSetting({
+  title: 'Include original upload date',
+  key: 'orig_upload_date',
   type: 'checkbox',
   defaultValue: false
 });
@@ -121,9 +131,10 @@ if (config.getEntry('derpi_source') !== undefined) {
   config.deleteEntry('derpi_source');
 }
 
-const INDICATE_IMPORT = config.getEntry('indicate_import');
 const LINK_FIX = config.getEntry('link_fix');
 const ORIGIN_SOURCE = config.getEntry('origin_source');
+const INDICATE_IMPORT = config.getEntry('indicate_import');
+const ORIG_UPLOAD_DATE = config.getEntry('orig_upload_date');
 const TAG_FILTER = config.getEntry('tag_filter');
 
 /*
@@ -198,7 +209,7 @@ async function importImage(imageID, booruData) {
   tagInput.value = addedTags.join(', ');
 
   // add description
-  $('#image_description').value = processDescription(description, imageID, booruData);
+  $('#image_description').value = processDescription(description, imageID, booruData, json.image);
 
   // revert tag editor
   if (fancyEditor) {
@@ -255,7 +266,7 @@ function initUI(){
   });
 }
 
-function processDescription(originalDescription, imageID, booruData) {
+function processDescription(originalDescription, imageID, booruData, imgJson) {
   const {primaryDomain, prettyName} = booruData;
   const emptyDesc = (originalDescription === '');
   let desc = originalDescription;
@@ -276,8 +287,8 @@ function processDescription(originalDescription, imageID, booruData) {
   }
 
   if (INDICATE_IMPORT) {
-    const msg = `"[Imported from ${prettyName}]":${primaryDomain}/images/${imageID}`;
-    desc = emptyDesc ? msg : msg + '\n\n' + desc;
+    let msg = `"[Imported from ${prettyName}]":${primaryDomain}/images/${imageID}`;
+    if (ORIG_UPLOAD_DATE) msg += `\nOriginal upload date: ${imgJson.created_at}`;
   }
 
   return desc;
