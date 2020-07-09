@@ -53,6 +53,8 @@ const DEFAULT_TAG_BLACKLIST = [
   'adventure in the comments',
   'changelings in the comments',
   'clopfic in the comments',
+  'comments locked down',
+  'comments more entertaining',
   'debate in the comments',
   'derail in the comments',
   'discussion in the comments',
