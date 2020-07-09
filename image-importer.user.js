@@ -331,7 +331,7 @@ function initImageImport() {
 function initUI(){
   const content = $('#content');                  // the closest parent element that persists after saving tags
   const imageTarget = $('#image_target');         // used to check for image page
-  const fetchButton = $('#js-scraper-preview');   // image scraper on upload page
+  const fetchButton = $('#js-scraper-preview');   // image scraper button
 
   if (content && imageTarget) {
     const observer = new MutationObserver(records => {
@@ -347,7 +347,8 @@ function initUI(){
     initTagImport();
   }
 
-  if (fetchButton) {
+  // scraper button is also used on reverse serach page, filter using form action
+  if (fetchButton && fetchButton.closest('form[action="/images"]')) {
     initImageImport();
   }
 }
