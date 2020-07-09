@@ -197,16 +197,7 @@ async function importImage(imageID, booruData) {
       : '';
 
   // add tags
-  let addedTags;
-  if (TAG_FILTER) {
-    const filtered_tags = config.getEntry('tag_blacklist')
-      .split(',')
-      .map(tag => tag.trim());
-    addedTags = tags.filter(tag => !filtered_tags.includes(tag));
-  } else {
-    addedTags = tags;
-  }
-  tagInput.value = addedTags.join(', ');
+  tagInput.value = performTagFilter(tags).join(', ');
 
   // add description
   $('#image_description').value = processDescription(description, imageID, booruData, json.image);
@@ -370,6 +361,17 @@ function getDomainInfo(domain) {
       }
       return booru;
     }
+  }
+}
+
+function performTagFilter(tagList) {
+  if (TAG_FILTER) {
+    const filtered_tags = config.getEntry('tag_blacklist')
+      .split(',')
+      .map(tag => tag.trim());
+    return tagList.filter(tag => !filtered_tags.includes(tag));
+  } else {
+    return tagList;
   }
 }
 
