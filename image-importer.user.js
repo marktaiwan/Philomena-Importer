@@ -33,6 +33,7 @@
 (function () {
 'use strict';
 
+const SCRIPT_ID = 'image_importer';
 const boorus = {
   derpibooru: {
     primaryDomain: 'https://derpibooru.org',
@@ -73,7 +74,7 @@ const DEFAULT_TAG_BLACKLIST = [
 
 const config = ConfigManager(
   'Philomena Image Importer',
-  'image_importer',
+  SCRIPT_ID,
   'Import image and tags from Philomena-based boorus.'
 );
 config.registerSetting({
@@ -173,7 +174,7 @@ async function importImage(imageID, booruData) {
   const makeAbsolute = (path, domain) => path.match(/^(?:https?:)?\/\//) ? path : domain + path;
 
   const {primaryDomain} = booruData;
-  const importButton = $('#script_import_button');
+  const importButton = $(`#${SCRIPT_ID}_import_button`);
   importButton.innerText = 'Loading...';
 
   // fetch image metadata
@@ -210,7 +211,12 @@ async function importImage(imageID, booruData) {
 
   // fetch full image
   const fileField = $('#image_image');
-  const imgBlob = await makeRequest(fileURL, 'blob', progressCallback).then(resp => resp.response);
+  const imgBlob = await makeRequest(
+    fileURL,
+    'blob',
+    progressCallback,
+    importButton
+  ).then(resp => resp.response);
 
   // create a file list to be assigned to input
   const list = new DataTransfer();
@@ -232,7 +238,7 @@ function initUI(){
   importButton.setAttribute('class', 'button button--separate-left');
   importButton.type = 'button';
   importButton.innerText = 'Import';
-  importButton.id = 'script_import_button';
+  importButton.id = `${SCRIPT_ID}_import_button`;
   importButton.style.width = '100px';
   fetchButton.insertAdjacentElement('beforebegin', importButton);
 
@@ -242,18 +248,9 @@ function initUI(){
 
     const input = $('#image_scraper_url');
     const url = input.value.trim();
-    try {
-      const {id, booruData} = getImageInfo(url);
-      importImage(id, booruData);
-    } catch (exception) {
-      if (exception.message === 'no_match') {
-        console.error('Failed to match input URL.');
-      } else if (exception.message === 'same_site') {
-        console.error('You can\'t import images from the same site. Moron.');
-      } else {
-        throw exception;
-      }
-    }
+    const {id, booruData} = getImageInfo(url);
+
+    importImage(id, booruData);
   });
 }
 
@@ -290,9 +287,10 @@ function processDescription(originalDescription, imageID, booruData, imgJson) {
   return desc;
 }
 
-function makeRequest(url, responseType = 'text', onprogress) {
+function makeRequest(url, responseType = 'text', onprogress, button) {
   return new Promise((resolve) => {
     GM_xmlhttpRequest({
+      context: button,
       url: url,
       method: 'GET',
       headers: {
@@ -301,7 +299,7 @@ function makeRequest(url, responseType = 'text', onprogress) {
       responseType,
       onload: resolve,
       onerror: (e) => {
-        $('#script_import_button').innerText = 'Error';
+        e.context.innerText = 'Error';
         console.log(e);
       },
       onprogress
@@ -312,7 +310,7 @@ function makeRequest(url, responseType = 'text', onprogress) {
 function progressCallback(response) {
   if (!response.lengthComputable || response.readyState !== 3) return;
 
-  const button = $('#script_import_button');
+  const button = response.context;
   const {loaded, total} = response;
   const percentage = Math.round((loaded / total) * 100);
 
@@ -320,25 +318,34 @@ function progressCallback(response) {
 }
 
 function getImageInfo(url) {
-  const domainRegexStr = concatDomains(boorus, 'booruDomains');
-  const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
-  const regex = new RegExp(
-    'https?://(?:www\\.)?(?:' +
-      `(?<domain>${domainRegexStr})/(?:images/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
-      `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
-    ')', 'i');
+  try {
+    const domainRegexStr = concatDomains(boorus, 'booruDomains');
+    const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
+    const regex = new RegExp(
+      'https?://(?:www\\.)?(?:' +
+        `(?<domain>${domainRegexStr})/(?:images/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
+        `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
+      ')', 'i');
 
-  const result = regex.exec(url);
-  if (result === null) {
-    throw Error('no_match');
+    const result = regex.exec(url);
+    if (result === null) {
+      throw Error('no_match');
+    }
+
+    const {domain, cdn, domID, cdnID} = result.groups;
+    const matchedDomain = domain || cdn;
+    const booruData = getDomainInfo(matchedDomain);
+    const id = domID || cdnID;
+
+    return {id, booruData};
+  } catch (exception) {
+    if (exception.message === 'no_match') {
+      console.error('Failed to match input URL.');
+    } else if (exception.message === 'same_site') {
+      console.error('You can\'t import images from the same site. Moron.');
+    }
+    throw exception;
   }
-
-  const {domain, cdn, domID, cdnID} = result.groups;
-  const matchedDomain = domain || cdn;
-  const booruData = getDomainInfo(matchedDomain);
-  const id = domID || cdnID;
-
-  return {id, booruData};
 }
 
 function concatDomains(boorus, prop) {
