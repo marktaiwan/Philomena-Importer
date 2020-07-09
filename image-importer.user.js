@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.4.1
+// @version      1.4.2
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -10,6 +10,7 @@
 //
 // @match        *://*.derpibooru.org/*
 // @match        *://*.trixiebooru.org/*
+// @match        *://*.ronxgr5zb4dkwdpt.onion/*
 // @match        *://*.ponybooru.org/*
 // @match        *://*.ponerpics.org/*
 //
@@ -32,7 +33,7 @@ const boorus = {
   derpibooru: {
     primaryDomain: 'https://derpibooru.org',
     prettyName: 'Derpibooru',
-    booruDomains: ['derpibooru.org', 'trixiebooru.org'],
+    booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
     cdnDomains: ['derpicdn.net'],
   },
   ponybooru: {
