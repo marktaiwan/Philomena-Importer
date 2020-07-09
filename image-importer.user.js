@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.4.0
+// @version      1.4.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -104,6 +104,12 @@ descFieldset.registerSetting({
   type: 'checkbox',
   defaultValue: false
 });
+descFieldset.registerSetting({
+  title: 'Include original uploader',
+  key: 'orig_uploader',
+  type: 'checkbox',
+  defaultValue: false
+});
 const tagFieldset = config.addFieldset(
   'Tag Filtering',
   'tag_filtering'
@@ -132,6 +138,7 @@ const LINK_FIX = config.getEntry('link_fix');
 const ORIGIN_SOURCE = config.getEntry('origin_source');
 const INDICATE_IMPORT = config.getEntry('indicate_import');
 const ORIG_UPLOAD_DATE = config.getEntry('orig_upload_date');
+const ORIG_UPLOADER = config.getEntry('orig_uploader');
 const TAG_FILTER = config.getEntry('tag_filter');
 
 /*
@@ -373,8 +380,10 @@ function processDescription(originalDescription, imageID, booruData, imgJson) {
   }
 
   if (INDICATE_IMPORT) {
+    const {created_at, uploader} = imgJson;
     let msg = `"[Imported from ${prettyName}]":${primaryDomain}/images/${imageID}`;
-    if (ORIG_UPLOAD_DATE) msg += `\nOriginal upload date: ${imgJson.created_at}`;
+    if (ORIG_UPLOAD_DATE) msg += `\nOriginal upload date: ${created_at}`;
+    if (ORIG_UPLOADER) msg += `\nOriginal uploader: ${(uploader) ? uploader : 'Anonymous'}`;
 
     desc = emptyDesc ? msg
       : msg
