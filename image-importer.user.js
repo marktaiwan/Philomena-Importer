@@ -8,16 +8,10 @@
 // @homepageURL  https://github.com/marktaiwan/Philomena-Importer
 // @supportURL   https://github.com/marktaiwan/Philomena-Importer/issues
 //
-// @match        *://*.derpibooru.org/images/new
-// @match        *://*.derpibooru.org/settings/edit
-// @match        *://*.trixiebooru.org/images/new
-// @match        *://*.trixiebooru.org/settings/edit
-//
-// @match        *://*.ponybooru.org/images/new
-// @match        *://*.ponybooru.org/settings/edit
-//
-// @match        *://*.ponerpics.org/images/new
-// @match        *://*.ponerpics.org/settings/edit
+// @match        *://*.derpibooru.org/*
+// @match        *://*.trixiebooru.org/*
+// @match        *://*.ponybooru.org/*
+// @match        *://*.ponerpics.org/*
 //
 // @connect      derpibooru.org
 // @connect      derpicdn.net
@@ -230,11 +224,84 @@ async function importImage(imageID, booruData) {
   importButton.innerText = 'Import';
 }
 
-function initUI(){
-  const fetchButton = $('#js-scraper-preview');
-  if (!fetchButton) return;
+async function importTags(imageID, booruData) {
+  const tagInput = $('#image_tag_input');
+  const {primaryDomain} = booruData;
+  const fancyEditor = tagInput.classList.contains('hidden');
+  const importButton = $(`#${SCRIPT_ID}_tag_import_button`);
+  importButton.innerText = 'Loading...';
 
+  // change to plain editor
+  if (fancyEditor) {
+    // "Plain editor" button
+    $('.js-taginput-hide').click();
+  }
+
+  // fetch image metadata
+  const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => JSON.parse(resp.responseText));
+  const fetchedTags = performTagFilter(json.image.tags);
+  const tagPool = tagInput.value
+    .split(',')
+    .map(tag => tag.trim());
+
+  // append tags
+  for (const tag of fetchedTags) {
+    if (tagPool.includes(tag)) continue;
+    tagPool.push(tag);
+  }
+
+  tagInput.value = tagPool.join(', ');
+
+  // revert tag editor
+  if (fancyEditor) {
+    // "Fancy Editor" button
+    $('.js-taginput-show').click();
+  }
+
+  importButton.innerText = 'Import tags';
+}
+
+function initTagImport() {
+  const tagsForm = $('#tags-form');
+
+  if (!tagsForm) return;  // tagging disabled
+
+  const field = document.createElement('div');
+  field.classList.add('field');
+  field.classList.add('field--inline');
+
+  const input = document.createElement('input');
+  input.classList.add('input');
+  input.classList.add('input--wide');
+  input.id = `${SCRIPT_ID}_tag_import_field`;
+
+  const button = document.createElement('button');
+  button.classList.add('button');
+  button.classList.add('button--separate-left');
+  button.type = 'button';
+  button.id = `${SCRIPT_ID}_tag_import_button`;
+  button.style.width = '120px';
+  button.innerText = 'Import tags';
+
+  field.appendChild(input);
+  field.appendChild(button);
+
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const url = input.value.trim();
+    const {id, booruData} = getImageInfo(url);
+    importTags(id, booruData);
+  });
+
+  $('.field>label:first-child', tagsForm).after(field);
+}
+
+function initImageImport() {
+  const fetchButton = $('#js-scraper-preview');
   const importButton = document.createElement('button');
+
   importButton.setAttribute('class', 'button button--separate-left');
   importButton.type = 'button';
   importButton.innerText = 'Import';
@@ -252,6 +319,30 @@ function initUI(){
 
     importImage(id, booruData);
   });
+}
+
+function initUI(){
+  const content = $('#content');                  // the closest parent element that persists after saving tags
+  const imageTarget = $('#image_target');         // used to check for image page
+  const fetchButton = $('#js-scraper-preview');   // image scraper on upload page
+
+  if (content && imageTarget) {
+    const observer = new MutationObserver(records => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (node.matches('.js-tagsauce')) {
+            initTagImport();
+          }
+        }
+      }
+    });
+    observer.observe(content, {childList: true});
+    initTagImport();
+  }
+
+  if (fetchButton) {
+    initImageImport();
+  }
 }
 
 function processDescription(originalDescription, imageID, booruData, imgJson) {
