@@ -250,12 +250,9 @@ async function importTags(imageID, booruData) {
     tagPool.push(tag);
   }
 
-  // remove 'artist needed' if applicable
-  const hasArtist = tagPool.some(tag => tag.startsWith('artist:'));
-  const artistNeededIndex = tagPool.findIndex(tag => tag == 'artist needed');
-  if (hasArtist && artistNeededIndex > -1) {
-    tagPool.splice(artistNeededIndex, 1);
-  }
+  // tag cleaning
+  conditionalTagRemoval(tagPool, tagPool.some(tag => tag.startsWith('artist:')), 'artist needed');
+  conditionalTagRemoval(tagPool, tagPool.some(tag => tag.startsWith('oc:')), 'unknown oc');
 
   tagInput.value = tagPool.join(', ');
 
@@ -478,6 +475,13 @@ function performTagFilter(tagList) {
     return tagList.filter(tag => !filtered_tags.includes(tag));
   } else {
     return tagList;
+  }
+}
+
+function conditionalTagRemoval(tagPool, condition, tagToRemove) {
+  if (condition) {
+    const tagIndex = tagPool.findIndex(tag => tag == tagToRemove);
+    if (tagIndex > -1) tagPool.splice(tagIndex, 1);
   }
 }
 
