@@ -250,6 +250,13 @@ async function importTags(imageID, booruData) {
     tagPool.push(tag);
   }
 
+  // remove 'artist needed' if applicable
+  const hasArtist = tagPool.some(tag => tag.startsWith('artist:'));
+  const artistNeededIndex = tagPool.findIndex(tag => tag == 'artist needed');
+  if (hasArtist && artistNeededIndex > -1) {
+    tagPool.splice(artistNeededIndex, 1);
+  }
+
   tagInput.value = tagPool.join(', ');
 
   // revert tag editor
