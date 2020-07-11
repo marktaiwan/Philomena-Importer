@@ -182,7 +182,7 @@ async function importImage(imageID, booruData) {
   importButton.innerText = 'Loading...';
 
   // fetch image metadata
-  const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => JSON.parse(resp.responseText));
+  const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => resp.response);
   const fileURL = makeAbsolute(json.image.representations.full, primaryDomain);
   const {description, tags, mime_type: mimeType, source_url: source, name: fileName} = json.image;
   const tagInput = $('#image_tag_input');
@@ -248,7 +248,7 @@ async function importTags(imageID, booruData) {
   }
 
   // fetch image metadata
-  const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => JSON.parse(resp.responseText));
+  const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => resp.response);
   const fetchedTags = performTagFilter(json.image.tags);
   const tagPool = tagInput.value
     .split(',')
@@ -395,7 +395,7 @@ function processDescription(originalDescription, imageID, booruData, imgJson) {
   return desc;
 }
 
-function makeRequest(url, responseType = 'text', onprogress, button) {
+function makeRequest(url, responseType = 'json', onprogress, button) {
   return new Promise((resolve) => {
     GM_xmlhttpRequest({
       context: button,
