@@ -278,7 +278,7 @@ async function importTags(imageID, booruData) {
 function initTagImport() {
   const tagsForm = $('#tags-form');
 
-  if (!tagsForm) return;  // tagging disabled
+  if (!tagsForm || $(`#${SCRIPT_ID}_tag_import_button`)) return;  // tagging disabled or ui already exists
 
   const field = document.createElement('div');
   field.classList.add('field');
