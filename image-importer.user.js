@@ -336,11 +336,12 @@ function initImageImport() {
 }
 
 function initUI(){
-  const content = $('#content');                  // the closest parent element that persists after saving tags
-  const imageTarget = $('#image_target');         // used to check for image page
-  const fetchButton = $('#js-scraper-preview');   // image scraper button
+  const content = $('#content');                      // the closest parent element that persists after saving tags
+  const imageTarget = $('#image_target');             // used to check for image page
+  const noThumb = $('#thumbnails-not-yet-generated'); // used to check for image page during image processing
+  const fetchButton = $('#js-scraper-preview');       // image scraper button
 
-  if (content && imageTarget) {
+  if (content && (imageTarget || noThumb)) {
     const observer = new MutationObserver(records => {
       for (const record of records) {
         for (const node of record.addedNodes) {
