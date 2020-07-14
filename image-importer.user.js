@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.4.3
+// @version      1.4.4
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -45,8 +45,8 @@ const boorus = {
   ponerpics: {
     primaryDomain: 'https://ponerpics.org',
     prettyName: 'Ponerpics',
-    booruDomains: ['ponerpics.org'],
-    cdnDomains: ['ponerpics.org'],
+    booruDomains: ['ponerpics.org', 'ponerpics.com'],
+    cdnDomains: ['ponerpics.org', 'ponerpics.com'],
   }
 };
 
