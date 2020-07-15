@@ -184,8 +184,14 @@ async function importImage(imageID, booruData) {
 
   // fetch image metadata
   const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => resp.response);
-  const fileURL = makeAbsolute(json.image.representations.full, primaryDomain);
   const {description, tags, mime_type: mimeType, source_url: source, name: fileName} = json.image;
+
+  // special case for svg uploads
+  const fileURL = (mimeType !== 'image/svg+xml')
+    ? json.image.representations.full
+    : json.image.representations.full.replace('/view/', /download/).replace(/\.\w+$/, '.svg');
+  console.log(fileURL);
+
   const tagInput = $('#image_tag_input');
   const fancyEditor = tagInput.classList.contains('hidden');
 
@@ -217,7 +223,7 @@ async function importImage(imageID, booruData) {
   // fetch full image
   const fileField = $('#image_image');
   const imgBlob = await makeRequest(
-    fileURL,
+    makeAbsolute(fileURL, primaryDomain),
     'blob',
     progressCallback,
     importButton
