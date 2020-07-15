@@ -58,6 +58,7 @@ const DEFAULT_TAG_BLACKLIST = [
   'comments more entertaining',
   'debate in the comments',
   'derail in the comments',
+  'derpibooru exclusive',
   'discussion in the comments',
   'duckery in the comments',
   'featured image',
