@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.4.5
+// @version      1.4.6
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -13,11 +13,13 @@
 // @match        *://*.ronxgr5zb4dkwdpt.onion/*
 // @match        *://*.ponybooru.org/*
 // @match        *://*.ponerpics.org/*
+// @match        *://*.ponerpics.com/*
 //
 // @connect      derpibooru.org
 // @connect      derpicdn.net
 // @connect      ponybooru.org
 // @connect      ponerpics.org
+// @connect      ponerpics.com
 //
 // @inject-into  content
 // @grant        GM_xmlhttpRequest
