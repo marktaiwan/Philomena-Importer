@@ -318,7 +318,7 @@ function initTagImport() {
     importTags(id, booruData);
   });
 
-  $('.field>label:first-child', tagsForm).after(field);
+  $('.field', tagsForm).prepend(field);
 }
 
 function initImageImport() {
