@@ -14,6 +14,7 @@
 // @match        *://*.ponybooru.org/*
 // @match        *://*.ponerpics.org/*
 // @match        *://*.ponerpics.com/*
+// @match        *://*.twibooru.org/*
 //
 // @connect      derpibooru.org
 // @connect      derpicdn.net
@@ -24,7 +25,7 @@
 // @inject-into  content
 // @grant        GM_xmlhttpRequest
 // @noframes
-// @require      https://github.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/raw/master/derpi-four-u.js?v1.2.2
+// @require      https://github.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/raw/master/derpi-four-u.js?v1.2.3
 // ==/UserScript==
 
 (function () {
@@ -49,7 +50,14 @@ const boorus = {
     prettyName: 'Ponerpics',
     booruDomains: ['ponerpics.org', 'ponerpics.com'],
     cdnDomains: ['ponerpics.org', 'ponerpics.com'],
-  }
+  },
+  twibooru: {
+    primaryDomain: 'https://twibooru.org',
+    prettyName: 'Twibooru',
+    booruDomains: ['twibooru.org', 'twibooru.com'],
+    cdnDomains: ['cdn.twibooru.org', 'cdn.twibooru.com'],
+    bor: true,
+  },
 };
 
 const DEFAULT_TAG_BLACKLIST = [
@@ -185,14 +193,18 @@ async function importImage(imageID, booruData) {
   importButton.innerText = 'Loading...';
 
   // fetch image metadata
-  const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => resp.response);
-  const {description, tags, mime_type: mimeType, source_url: source, name: fileName} = json.image;
+  const json = await fetchMeta(imageID, booruData);
+  const metadata = (booruData.bor) ? json : json.image;
+  const {description, mime_type: mimeType, source_url: source} = metadata;
+
+  // handle differences in response between booru-on-rails and philomena
+  const tags = (booruData.bor) ? tagsToArray(metadata.tags) : metadata.tags;
+  const fileName = (booruData.bor) ? metadata.file_name : metadata.name;
 
   // special case for svg uploads
   const fileURL = (mimeType !== 'image/svg+xml')
-    ? json.image.representations.full
-    : json.image.representations.full.replace('/view/', /download/).replace(/\.\w+$/, '.svg');
-  console.log(fileURL);
+    ? metadata.representations.full
+    : metadata.representations.full.replace('/view/', /download/).replace(/\.\w+$/, '.svg');
 
   const tagInput = $('#image_tag_input');
   const fancyEditor = tagInput.classList.contains('hidden');
@@ -214,7 +226,7 @@ async function importImage(imageID, booruData) {
   tagInput.value = performTagFilter(tags).join(', ');
 
   // add description
-  $('#image_description').value = processDescription(description, imageID, booruData, json.image);
+  $('#image_description').value = processDescription(description, imageID, booruData, metadata);
 
   // revert tag editor
   if (fancyEditor) {
@@ -245,7 +257,6 @@ async function importImage(imageID, booruData) {
 
 async function importTags(imageID, booruData) {
   const tagInput = $('#image_tag_input');
-  const {primaryDomain} = booruData;
   const fancyEditor = tagInput.classList.contains('hidden');
   const importButton = $(`#${SCRIPT_ID}_tag_import_button`);
   importButton.innerText = 'Loading...';
@@ -257,11 +268,12 @@ async function importTags(imageID, booruData) {
   }
 
   // fetch image metadata
-  const json = await makeRequest(`${primaryDomain}/api/v1/json/images/` + imageID).then(resp => resp.response);
-  const fetchedTags = performTagFilter(json.image.tags);
-  const tagPool = tagInput.value
-    .split(',')
-    .map(tag => tag.trim());
+  const json = await fetchMeta(imageID, booruData);
+
+  // booru-on-rails returns the tags as comma separated string
+  const tags = (booruData.bor) ? tagsToArray(json.tags) : json.image.tags;
+  const fetchedTags = performTagFilter(tags);
+  const tagPool = tagsToArray(tagInput.value);
 
   // append tags
   for (const tag of fetchedTags) {
@@ -336,7 +348,7 @@ function initImageImport() {
     e.stopPropagation();
     e.preventDefault();
 
-    const input = $('#image_scraper_url');
+    const input = $('#image_scraper_url, #scraper_url');
     const url = input.value.trim();
     const {id, booruData} = getImageInfo(url);
 
@@ -403,6 +415,14 @@ function processDescription(originalDescription, imageID, booruData, imgJson) {
   }
 
   return desc;
+}
+
+function fetchMeta(imageID, booruData) {
+  const {primaryDomain} = booruData;
+  const requestURL = (booruData.bor)
+    ? `${primaryDomain}/images/${imageID}.json`
+    : `${primaryDomain}/api/v1/json/images/` + imageID;
+  return makeRequest(requestURL).then(resp => resp.response);
 }
 
 function makeRequest(url, responseType = 'json', onprogress, button) {
@@ -491,9 +511,7 @@ function getDomainInfo(domain) {
 
 function performTagFilter(tagList) {
   if (TAG_FILTER) {
-    const filtered_tags = config.getEntry('tag_blacklist')
-      .split(',')
-      .map(tag => tag.trim());
+    const filtered_tags = tagsToArray(config.getEntry('tag_blacklist'));
     return tagList.filter(tag => !filtered_tags.includes(tag));
   } else {
     return tagList;
@@ -503,6 +521,10 @@ function performTagFilter(tagList) {
 function removeTag(tagPool, tagToRemove) {
   const tagIndex = tagPool.findIndex(tag => tag == tagToRemove);
   if (tagIndex > -1) tagPool.splice(tagIndex, 1);
+}
+
+function tagsToArray(str) {
+  return str.split(',').map(tag => tag.trim());
 }
 
 initUI();
