@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.5.0
+// @version      1.5.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -199,7 +199,13 @@ async function importImage(imageID, booruData) {
 
   // handle differences in response between booru-on-rails and philomena
   const tags = (booruData.bor) ? tagsToArray(metadata.tags) : metadata.tags;
-  const fileName = (booruData.bor) ? metadata.file_name : metadata.name;
+  const name = (booruData.bor) ? metadata.file_name : metadata.name;
+  const ext = (booruData.bor) ? metadata.original_format : metadata.format;
+
+  // booru-on-rail doesn't accept filenames without extension
+  const fileName = (/\.(?:jpg|jpeg|png|gif|webm|mp4)$/i).test(name)
+    ? name
+    : name + '.' + ext;
 
   // special case for svg uploads
   const fileURL = (mimeType !== 'image/svg+xml')
