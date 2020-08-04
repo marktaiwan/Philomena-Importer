@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.5.1
+// @version      1.5.2
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -248,16 +248,18 @@ async function importImage(imageID, booruData) {
     'blob',
     progressCallback,
     importButton
-  ).then(resp => resp.response);
+  ).then(resp => (resp.status == 200) ? resp.response : null);
 
   // create a file list to be assigned to input
-  const list = new DataTransfer();
-  list.items.add(new File([imgBlob], fileName, {type: mimeType}));
+  if (imgBlob !== null) {
+    const list = new DataTransfer();
+    list.items.add(new File([imgBlob], fileName, {type: mimeType}));
 
-  fileField.files = list.files;
+    fileField.files = list.files;
 
-  // dispatch change event to file input
-  fileField.dispatchEvent(new Event('change'));
+    // dispatch change event to file input
+    fileField.dispatchEvent(new Event('change'));
+  }
 
   importButton.innerText = 'Import';
 }
