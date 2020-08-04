@@ -250,8 +250,8 @@ async function importImage(imageID, booruData) {
     importButton
   ).then(resp => (resp.status == 200) ? resp.response : null);
 
-  // create a file list to be assigned to input
   if (imgBlob !== null) {
+    // create a file list to be assigned to input
     const list = new DataTransfer();
     list.items.add(new File([imgBlob], fileName, {type: mimeType}));
 
@@ -259,6 +259,8 @@ async function importImage(imageID, booruData) {
 
     // dispatch change event to file input
     fileField.dispatchEvent(new Event('change'));
+  } else {
+    importButton.innerText = 'Error';
   }
 
   importButton.innerText = 'Import';
