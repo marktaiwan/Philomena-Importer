@@ -242,7 +242,9 @@ async function importImage(imageID, booruData) {
       : '';
 
   // add tags
-  tagInput.value = performTagFilter(tags).join(', ');
+  const newTags = performTagFilter(tags);
+  performTagCleanUp(newTags);
+  tagInput.value = newTags.join(', ');
 
   // add description
   $('#image_description').value = processDescription(description, imageID, booruData, metadata);
@@ -304,13 +306,7 @@ async function importTags(imageID, booruData) {
     tagPool.push(tag);
   }
 
-  // tag cleaning
-  if (tagPool.some(tag => tag.startsWith('artist:'))) removeTag(tagPool, 'artist needed');
-  if (tagPool.some(tag => tag.startsWith('oc:'))) removeTag(tagPool, 'unknown oc');
-  if (tagPool.some(tag => tag == 'unofficial characters only')) {
-    removeTag(tagPool, 'unofficial characters only');
-    tagPool.push('oc only');
-  }
+  performTagCleanUp(tagPool);
 
   tagInput.value = tagPool.join(', ');
 
@@ -545,9 +541,37 @@ function performTagFilter(tagList) {
   }
 }
 
+function performTagCleanUp(tagPool) {
+  if (tagPool.some(tag => tag.startsWith('artist:'))) removeTag(tagPool, 'artist needed');
+  if (tagPool.some(tag => tag.startsWith('oc:'))) removeTag(tagPool, 'unknown oc');
+  if (tagPool.some(tag => tag.startsWith('ponified:'))) {
+    tagPool.forEach(removeNamespace('ponified:'));
+    addTag(tagPool, 'ponified');
+  }
+  tagPool.forEach(removeNamespace('species:'));
+  replaceTag(tagPool, 'unofficial characters only', 'oc only');
+}
+
+function addTag(tagPool, tagToAdd) {
+  if (!tagPool.includes('tagToAdd')) tagPool.push(tagToAdd);
+}
+
 function removeTag(tagPool, tagToRemove) {
   const tagIndex = tagPool.findIndex(tag => tag == tagToRemove);
   if (tagIndex > -1) tagPool.splice(tagIndex, 1);
+}
+
+function replaceTag(tagPool, oldTag, newTag) {
+  if (tagPool.includes(oldTag)) {
+    removeTag(tagPool, oldTag);
+    addTag(tagPool, newTag);
+  }
+}
+
+function removeNamespace(namespace) {
+  return (tag, index, tagPool) => {
+    if (tag.startsWith(namespace)) tagPool[index] = tag.slice(namespace.length);
+  };
 }
 
 function tagsToArray(str) {
