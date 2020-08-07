@@ -559,6 +559,7 @@ function performTagCleanUp(tagPool) {
   replaceTag(tagPool, 'unofficial characters only', 'oc only');
   replaceTag(tagPool, 'glow-in-the-dark', 'glow in the dark');
   replaceTag(tagPool, 'unauthorized edit', 'edit');
+  replaceTag(tagPool, 'pony pussy', 'anatomically correct');
 }
 
 function addTag(tagPool, tagToAdd) {
