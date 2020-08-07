@@ -550,7 +550,7 @@ function performTagCleanUp(tagPool) {
 }
 
 function addTag(tagPool, tagToAdd) {
-  if (!tagPool.includes('tagToAdd')) tagPool.push(tagToAdd);
+  if (!tagPool.includes(tagToAdd)) tagPool.push(tagToAdd);
 }
 
 function removeTag(tagPool, tagToRemove) {
