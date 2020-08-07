@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.5.3
+// @version      1.5.4
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -68,6 +68,7 @@ const boorus = {
 
 const DEFAULT_TAG_BLACKLIST = [
   'adventure in the comments',
+  'banned tags',
   'changelings in the comments',
   'clopfic in the comments',
   'comments locked down',
@@ -80,11 +81,16 @@ const DEFAULT_TAG_BLACKLIST = [
   'duckery in the comments',
   'featured image',
   'index get',
+  'manebooru exclusive',
   'politics in the comments',
+  'ponerpics exclusive',
+  'ponibooru exclusive',
+  'ponybooru exclusive',
   'shipping war in the comments',
   'song in the comments',
   'story in the comments',
   'translated in the comments',
+  'twibooru exclusive',
 ];
 
 const config = ConfigManager(
@@ -301,6 +307,10 @@ async function importTags(imageID, booruData) {
   // tag cleaning
   if (tagPool.some(tag => tag.startsWith('artist:'))) removeTag(tagPool, 'artist needed');
   if (tagPool.some(tag => tag.startsWith('oc:'))) removeTag(tagPool, 'unknown oc');
+  if (tagPool.some(tag => tag == 'unofficial characters only')) {
+    removeTag(tagPool, 'unofficial characters only');
+    tagPool.push('oc only');
+  }
 
   tagInput.value = tagPool.join(', ');
 
