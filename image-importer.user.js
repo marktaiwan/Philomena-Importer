@@ -147,6 +147,13 @@ tagFieldset.registerSetting({
   type: 'checkbox',
   defaultValue: true
 });
+tagFieldset.registerSetting({
+  title: 'Subscribe to default filter',
+  key: 'sub_default',
+  description: 'Filter tags from the default list in addition to the user defined tags. The list stays current with script updates.',
+  type: 'checkbox',
+  defaultValue: true
+});
 const tagEntry = tagFieldset.registerSetting({
   title: 'Remove these tags:',
   key: 'tag_blacklist',
@@ -531,7 +538,10 @@ function getDomainInfo(domain) {
 
 function performTagFilter(tagList) {
   if (TAG_FILTER) {
-    const filtered_tags = tagsToArray(config.getEntry('tag_blacklist'));
+    const userFilter = tagsToArray(config.getEntry('tag_blacklist'));
+    const filtered_tags = SUB_DEFAULT
+      ? [...DEFAULT_TAG_BLACKLIST, ...userFilter]   // Dupes doesn't matter
+      : userFilter;
     return tagList.filter(tag => !filtered_tags.includes(tag));
   } else {
     return tagList;
