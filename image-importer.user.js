@@ -28,6 +28,8 @@
 // @require      https://github.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/raw/master/derpi-four-u.js?v1.2.3
 // ==/UserScript==
 
+/* global ConfigManager */
+
 (function () {
 'use strict';
 
