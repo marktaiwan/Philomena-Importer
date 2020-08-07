@@ -547,6 +547,8 @@ function performTagCleanUp(tagPool) {
   }
   tagPool.forEach(removeNamespace('species:'));
   replaceTag(tagPool, 'unofficial characters only', 'oc only');
+  replaceTag(tagPool, 'glow-in-the-dark', 'glow in the dark');
+  replaceTag(tagPool, 'unauthorized edit', 'edit');
 }
 
 function addTag(tagPool, tagToAdd) {
