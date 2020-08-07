@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.5.2
+// @version      1.5.3
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -57,6 +57,12 @@ const boorus = {
     booruDomains: ['twibooru.org', 'twibooru.com'],
     cdnDomains: ['cdn.twibooru.org', 'cdn.twibooru.com'],
     bor: true,
+  },
+  manebooru: {
+    primaryDomain: 'https://manebooru.art/',
+    prettyName: 'Manebooru',
+    booruDomains: ['manebooru.art'],
+    cdnDomains: ['static.manebooru.art'],
   },
 };
 
