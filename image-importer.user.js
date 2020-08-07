@@ -155,18 +155,13 @@ const tagEntry = tagFieldset.registerSetting({
   defaultValue: DEFAULT_TAG_BLACKLIST.join(', ')
 });
 
-// setting migration 1.2.5 -> 1.3.0
-if (config.getEntry('derpi_source') !== undefined) {
-  config.setEntry('origin_source', config.getEntry('derpi_source'));
-  config.deleteEntry('derpi_source');
-}
-
 const LINK_FIX = config.getEntry('link_fix');
 const ORIGIN_SOURCE = config.getEntry('origin_source');
 const INDICATE_IMPORT = config.getEntry('indicate_import');
 const ORIG_UPLOAD_DATE = config.getEntry('orig_upload_date');
 const ORIG_UPLOADER = config.getEntry('orig_uploader');
 const TAG_FILTER = config.getEntry('tag_filter');
+const SUB_DEFAULT = config.getEntry('sub_default');
 
 /*
  *  Perform coding surgery to change input field into textarea
