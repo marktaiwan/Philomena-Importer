@@ -82,6 +82,7 @@ const DEFAULT_TAG_BLACKLIST = [
   'discussion in the comments',
   'duckery in the comments',
   'featured image',
+  'hfh',
   'index get',
   'manebooru exclusive',
   'politics in the comments',
