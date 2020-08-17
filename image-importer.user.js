@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.6.0
+// @version      1.6.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -70,12 +70,14 @@ const boorus = {
 
 const DEFAULT_TAG_BLACKLIST = [
   'adventure in the comments',
+  'banned from derpibooru',
   'banned tags',
   'changelings in the comments',
   'clopfic in the comments',
   'comments locked down',
   'comments more entertaining',
   'debate in the comments',
+  'deleted from derpibooru',
   'derail in the comments',
   'derpibooru exclusive',
   'derpibooru import',
@@ -87,7 +89,6 @@ const DEFAULT_TAG_BLACKLIST = [
   'manebooru exclusive',
   'politics in the comments',
   'ponerpics exclusive',
-  'ponibooru exclusive',
   'ponybooru exclusive',
   'shipping war in the comments',
   'song in the comments',
