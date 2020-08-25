@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.6.1
+// @version      1.6.2
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -89,7 +89,9 @@ const DEFAULT_TAG_BLACKLIST = [
   'manebooru exclusive',
   'politics in the comments',
   'ponerpics exclusive',
+  'ponerpics import',
   'ponybooru exclusive',
+  'ponybooru import',
   'shipping war in the comments',
   'song in the comments',
   'story in the comments',
