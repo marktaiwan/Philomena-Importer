@@ -90,6 +90,7 @@ const DEFAULT_TAG_BLACKLIST = [
   'politics in the comments',
   'ponerpics exclusive',
   'ponerpics import',
+  'ponibooru import',
   'ponybooru exclusive',
   'ponybooru import',
   'shipping war in the comments',
