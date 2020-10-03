@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.6.3
+// @version      1.6.4
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -235,7 +235,7 @@ async function importImage(imageID, booruData) {
     ? metadata.representations.full
     : metadata.representations.full.replace('/view/', /download/).replace(/\.\w+$/, '.svg');
 
-  const tagInput = $('#image_tag_input');
+  const tagInput = $('#image_tag_input, #tags-form_tag_input');
   const fancyEditor = tagInput.classList.contains('hidden');
 
   // change to plain editor
@@ -291,7 +291,7 @@ async function importImage(imageID, booruData) {
 }
 
 async function importTags(imageID, booruData) {
-  const tagInput = $('#image_tag_input');
+  const tagInput = $('#image_tag_input, #tags-form_tag_input');
   const fancyEditor = tagInput.classList.contains('hidden');
   const importButton = $(`#${SCRIPT_ID}_tag_import_button`);
   importButton.innerText = 'Loading...';
