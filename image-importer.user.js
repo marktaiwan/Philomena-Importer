@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.6.4
+// @version      1.6.5
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -86,6 +86,10 @@ const DEFAULT_TAG_BLACKLIST = [
   'featured image',
   'hfh',
   'imported from derpibooru',
+  'imported from manebooru',
+  'imported from ponerpics',
+  'imported from ponybooru',
+  'imported from twibooru',
   'index get',
   'manebooru exclusive',
   'politics in the comments',
@@ -99,6 +103,7 @@ const DEFAULT_TAG_BLACKLIST = [
   'story in the comments',
   'translated in the comments',
   'twibooru exclusive',
+  'twibooru import',
 ];
 
 const config = ConfigManager(
