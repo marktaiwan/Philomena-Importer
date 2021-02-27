@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.6.5
+// @version      1.6.6
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -91,7 +91,10 @@ const DEFAULT_TAG_BLACKLIST = [
   'imported from ponybooru',
   'imported from twibooru',
   'index get',
+  'jpeg',
   'manebooru exclusive',
+  'manebooru original',
+  'png',
   'politics in the comments',
   'ponerpics exclusive',
   'ponerpics import',
@@ -567,6 +570,7 @@ function performTagCleanUp(tagPool) {
     addTag(tagPool, 'ponified');
   }
   tagPool.forEach(removeNamespace('species:'));
+  tagPool.forEach(removeNamespace('character:'));
   replaceTag(tagPool, 'unofficial characters only', 'oc only');
   replaceTag(tagPool, 'glow-in-the-dark', 'glow in the dark');
   replaceTag(tagPool, 'unauthorized edit', 'edit');
