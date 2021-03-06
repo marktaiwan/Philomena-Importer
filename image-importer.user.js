@@ -423,8 +423,9 @@ function initUI(){
   }
 }
 
-function processDescription(originalDescription, imageID, booruData, imgJson) {
-  const {primaryDomain, prettyName} = booruData;
+function processDescription(originalDescription, imageID, sourceBooruData, imgJson) {
+  const {booru: targetBooruData} = matchDomain(window.location.host);
+  const {primaryDomain, prettyName} = sourceBooruData;
   const emptyDesc = (originalDescription === '');
   let desc = originalDescription;
 
@@ -438,8 +439,8 @@ function processDescription(originalDescription, imageID, booruData, imgJson) {
     // rewrite image links
     // match image links, turn embeds into links as well.
     desc = desc.replace(
-      /(?:>>(\d+))[pts]?/g,
-      (matched, id) => `"[==${matched}==]":${primaryDomain}/images/${id}`
+      /(?:>>(\d+))([pts])?/g,
+      (matched, id, postfix) => `">>[${prettyName}]${[id, postfix].join('')}":${primaryDomain}/images/${id}`
     );
   }
 
@@ -538,16 +539,21 @@ function concatDomains(boorus, prop) {
   return arr.join('|');
 }
 
-function getDomainInfo(domain) {
+function matchDomain(domain) {
   for (const booru of Object.values(boorus)) {
     const validDomains = [...booru.booruDomains, ...booru.cdnDomains];
     if (validDomains.includes(domain)) {
-      if (validDomains.includes(window.location.host)) {
-        throw Error('same_site');
-      }
-      return booru;
+      return {booru, validDomains};
     }
   }
+}
+
+function getDomainInfo(domain) {
+  const {booru, validDomains} = matchDomain(domain);
+  if (validDomains.includes(window.location.host)) {
+    throw Error('same_site');
+  }
+  return booru;
 }
 
 function performTagFilter(tagList) {
