@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.7.0
+// @version      1.7.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -762,6 +762,9 @@ function textileToMarkdown(text) {
       (matched, p1, p2) => `${markdown.open}${p1 || p2}${markdown.close}`
     );
   }
+
+  // escape > at the beginning of a line
+  text = text.replace(/^>/gm, '\\>');
 
   // <hr>
   text = text.replace('<!hr!>', '\n---');
