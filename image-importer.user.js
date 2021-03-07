@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.7.1
+// @version      1.7.2
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -755,8 +755,8 @@ function textileToMarkdown(text) {
     {textile: {open: '-'}, markdown: {open: '~~'}},
   ];
   for (const {textile, markdown} of tagMapping) {
-    textile.close ||= textile.open;
-    markdown.close ||= markdown.open;
+    textile.close = textile.close || textile.open;
+    markdown.close = markdown.close || markdown.open;
     text = text.replace(
       textileRegExpMaker(textile.open, textile.close, 'g'),
       (matched, p1, p2) => `${markdown.open}${p1 || p2}${markdown.close}`
