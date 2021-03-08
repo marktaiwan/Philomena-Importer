@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.7.3
+// @version      1.7.4
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -233,6 +233,7 @@ async function importImage(imageID, booruData) {
   const tags = (booruData.bor) ? tagsToArray(metadata.tags) : metadata.tags;
   const name = (booruData.bor) ? metadata.file_name : metadata.name;
   const ext = (booruData.bor) ? metadata.original_format : metadata.format;
+  const imgPath = (booruData.bor) ? 'posts' : 'images';
 
   // booru-on-rail doesn't accept filenames without extension
   const fileName = (/\.(?:jpg|jpeg|png|gif|webm|mp4)$/i).test(name)
@@ -257,7 +258,7 @@ async function importImage(imageID, booruData) {
   $('#image_source_url, #post_source_url').value = (source)
     ? source
     : (ORIGIN_SOURCE)
-      ? `${primaryDomain}/images/${imageID}`
+      ? `${primaryDomain}/${imgPath}/${imageID}`
       : '';
 
   // add tags
@@ -428,6 +429,7 @@ function processDescription(originalDescription, imageID, sourceBooruData, imgJs
   const {booru: targetBooruData} = matchDomain(window.location.host);
   const {primaryDomain, prettyName} = sourceBooruData;
   const emptyDesc = (originalDescription === '');
+  const imgPath = (!sourceBooruData.bor) ? 'images' : 'posts';
   let desc = originalDescription;
 
   if (LINK_FIX && !emptyDesc) {
@@ -441,13 +443,13 @@ function processDescription(originalDescription, imageID, sourceBooruData, imgJs
     // match image links, turn embeds into links as well.
     desc = desc.replace(
       /(?:>>(\d+))([pts])?/g,
-      (matched, id, postfix) => `">>[${prettyName}]${[id, postfix].join('')}":${primaryDomain}/images/${id}`
+      (matched, id, postfix) => `">>[${prettyName}]${[id, postfix].join('')}":${primaryDomain}/${imgPath}/${id}`
     );
   }
 
   if (INDICATE_IMPORT) {
     const {created_at, uploader} = imgJson;
-    let msg = `"[Imported from ${prettyName}]":${primaryDomain}/images/${imageID}`;
+    let msg = `"[Imported from ${prettyName}]":${primaryDomain}/${imgPath}/${imageID}`;
     if (ORIG_UPLOAD_DATE) msg += `\nOriginal upload date: ${created_at}`;
     if (ORIG_UPLOADER) msg += `\nOriginal uploader: ${(uploader) ? uploader : 'Anonymous'}`;
 
@@ -469,7 +471,7 @@ function processDescription(originalDescription, imageID, sourceBooruData, imgJs
 function fetchMeta(imageID, booruData) {
   const {primaryDomain} = booruData;
   const requestURL = (booruData.bor)
-    ? `${primaryDomain}/images/${imageID}.json`
+    ? `${primaryDomain}/posts/${imageID}.json`
     : `${primaryDomain}/api/v1/json/images/` + imageID;
   return makeRequest(requestURL).then(resp => resp.response);
 }
@@ -510,7 +512,7 @@ function getImageInfo(url) {
     const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
     const regex = new RegExp(
       'https?://(?:www\\.)?(?:' +
-        `(?<domain>${domainRegexStr})/(?:images/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
+        `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
         `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
       ')', 'i');
 
