@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.7.2
+// @version      1.7.3
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -244,7 +244,7 @@ async function importImage(imageID, booruData) {
     ? metadata.representations.full
     : metadata.representations.full.replace('/view/', /download/).replace(/\.\w+$/, '.svg');
 
-  const tagInput = $('#image_tag_input, #tags-form_tag_input');
+  const tagInput = $('#image_tag_input, #tags-form_tag_input, #post_tag_input');
   const fancyEditor = tagInput.classList.contains('hidden');
 
   // change to plain editor
@@ -254,7 +254,7 @@ async function importImage(imageID, booruData) {
   }
 
   // add source
-  $('#image_source_url').value = (source)
+  $('#image_source_url, #post_source_url').value = (source)
     ? source
     : (ORIGIN_SOURCE)
       ? `${primaryDomain}/images/${imageID}`
@@ -266,7 +266,7 @@ async function importImage(imageID, booruData) {
   tagInput.value = newTags.join(', ');
 
   // add description
-  $('#image_description').value = processDescription(description, imageID, booruData, metadata);
+  $('#image_description, #image_description, #post_description').value = processDescription(description, imageID, booruData, metadata);
 
   // revert tag editor
   if (fancyEditor) {
@@ -275,7 +275,7 @@ async function importImage(imageID, booruData) {
   }
 
   // fetch full image
-  const fileField = $('#image_image');
+  const fileField = $('#image_image, #post_file');
   const imgBlob = await makeRequest(
     makeAbsolute(fileURL, primaryDomain),
     'blob',
@@ -300,7 +300,7 @@ async function importImage(imageID, booruData) {
 }
 
 async function importTags(imageID, booruData) {
-  const tagInput = $('#image_tag_input, #tags-form_tag_input');
+  const tagInput = $('#image_tag_input, #tags-form_tag_input, #post_tag_input');
   const fancyEditor = tagInput.classList.contains('hidden');
   const importButton = $(`#${SCRIPT_ID}_tag_import_button`);
   importButton.innerText = 'Loading...';
@@ -419,7 +419,7 @@ function initUI(){
   }
 
   // scraper button is also used on reverse serach page, filter using form action
-  if (fetchButton && fetchButton.closest('form[action="/images"]')) {
+  if (fetchButton && fetchButton.closest('form[action="/images"], form[action="/posts"]')) {
     initImageImport();
   }
 }
