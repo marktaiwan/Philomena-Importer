@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.7.5
+// @version      1.7.6
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -463,7 +463,7 @@ function processDescription(originalDescription, imageID, sourceBooruData, imgJs
   }
 
   // Half-assed textile -> markdown conversion for Twibooru
-  if (!emptyDesc && targetBooruData.markdown && !sourceBooruData.markdown) {
+  if ((!emptyDesc || INDICATE_IMPORT) && targetBooruData.markdown && !sourceBooruData.markdown) {
     desc = textileToMarkdown(desc);
   }
 
