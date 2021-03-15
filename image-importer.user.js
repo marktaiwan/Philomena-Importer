@@ -782,7 +782,7 @@ function textileToMarkdown(text) {
   // quotes
   text = convertQuotes(text);
 
-  // double space before linebrakes
+  // double space before linebreaks
   text = text.replace(/(?<=\S)\n|\r\n(?=\S)/g, '  \n');
 
   return text;
