@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.7.6
+// @version      1.7.7
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -781,6 +781,9 @@ function textileToMarkdown(text) {
 
   // quotes
   text = convertQuotes(text);
+
+  // double space before linebrakes
+  text = text.replace(/(?<=\S)\n(?=\S)/g, '  \n');
 
   return text;
 }
