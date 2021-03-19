@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Image Importer
 // @description  Import image and tags from Philomena-based boorus
-// @version      1.7.9
+// @version      1.7.10
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -379,15 +379,14 @@ function initTagImport() {
 }
 
 function initImageImport() {
-  const fetchButton = $('#js-scraper-preview');
+  const scraperInput = $('#image_scraper_url, #scraper_url');
   const importButton = document.createElement('button');
-
   importButton.setAttribute('class', 'button button--separate-left');
   importButton.type = 'button';
   importButton.innerText = 'Import';
   importButton.id = `${SCRIPT_ID}_import_button`;
   importButton.style.width = '100px';
-  fetchButton.insertAdjacentElement('beforebegin', importButton);
+  scraperInput.after(importButton);
 
   importButton.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -405,7 +404,8 @@ function initUI(){
   const content = $('#content');                      // the closest parent element that persists after saving tags
   const imageTarget = $('#image_target');             // used to check for image page
   const noThumb = $('#thumbnails-not-yet-generated'); // used to check for image page during image processing
-  const fetchButton = $('#js-scraper-preview');       // image scraper button
+
+  let scraperInput = $('#image_scraper_url, #scraper_url'); // image scraper field
 
   if (content && (imageTarget || noThumb)) {
     const observer = new MutationObserver(records => {
@@ -420,9 +420,23 @@ function initUI(){
     observer.observe(content, {childList: true});
     initTagImport();
   }
+  if (!scraperInput && $('form[action="/images"]')) {
+    // Ponerpics doesn't have scraper enabled
+    const filePicker = $('#image_image');
+    const div = document.createElement('div');
+    div.classList.add('field', 'field--inline');
+
+    scraperInput = document.createElement('input');
+    scraperInput.classList.add('input', 'input--wide', 'js-scraper');
+    scraperInput.id = 'image_scraper_url';
+    scraperInput.type = 'url';
+
+    div.append(scraperInput);
+    filePicker?.parentElement.after(div);
+  }
 
   // scraper button is also used on reverse serach page, filter using form action
-  if (fetchButton && fetchButton.closest('form[action="/images"], form[action="/posts"]')) {
+  if (scraperInput && scraperInput.closest('form[action="/images"], form[action="/posts"]')) {
     initImageImport();
   }
 }
