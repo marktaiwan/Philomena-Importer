@@ -46,18 +46,21 @@ const boorus = {
     prettyName: 'Ponybooru',
     booruDomains: ['ponybooru.org'],
     cdnDomains: ['cdn.ponybooru.org'],
+    importTag: siteName => `${siteName} import`,
   },
   ponerpics: {
     primaryDomain: 'https://ponerpics.org',
     prettyName: 'Ponerpics',
     booruDomains: ['ponerpics.org', 'ponerpics.com'],
     cdnDomains: ['ponerpics.org', 'ponerpics.com'],
+    importTag: siteName => `imported from ${siteName}`,
   },
   twibooru: {
     primaryDomain: 'https://twibooru.org',
     prettyName: 'Twibooru',
     booruDomains: ['twibooru.org', 'twibooru.com'],
     cdnDomains: ['cdn.twibooru.org', 'cdn.twibooru.com'],
+    importTag: siteName => `${siteName} import`,
     bor: true,
     markdown: true,
   },
@@ -165,6 +168,13 @@ tagFieldset.registerSetting({
   defaultValue: true
 });
 tagFieldset.registerSetting({
+  title: 'Add "import" tag',
+  key: 'indicate_import_tag',
+  description: 'Add a "<site> import" tag for sites with a standardized tagging convention for imported images',
+  type: 'checkbox',
+  defaultValue: true
+});
+tagFieldset.registerSetting({
   title: 'Subscribe to default filter',
   key: 'sub_default',
   description: 'Filter tags from the default list in addition to the user defined tags. The list stays current with script updates.',
@@ -185,6 +195,7 @@ const INDICATE_IMPORT = config.getEntry('indicate_import');
 const ORIG_UPLOAD_DATE = config.getEntry('orig_upload_date');
 const ORIG_UPLOADER = config.getEntry('orig_uploader');
 const TAG_FILTER = config.getEntry('tag_filter');
+const INDICATE_IMPORT_TAG = config.getEntry('indicate_import_tag');
 const SUB_DEFAULT = config.getEntry('sub_default');
 
 /*
@@ -222,6 +233,7 @@ function $(selector, parent = document) {
 async function importImage(imageID, booruData) {
   const makeAbsolute = (path, domain) => path.match(/^(?:https?:)?\/\//) ? path : domain + path;
 
+  const {booru: targetBooruData} = matchDomain(window.location.host);
   const {primaryDomain} = booruData;
   const importButton = $(`#${SCRIPT_ID}_import_button`);
   importButton.innerText = 'Loading...';
@@ -266,10 +278,21 @@ async function importImage(imageID, booruData) {
   // add tags
   const newTags = performTagFilter(tags);
   performTagCleanUp(newTags);
+  if (INDICATE_IMPORT_TAG && targetBooruData.importTag) {
+    // site has a standardized tagging convention for imported images
+    const sourceName = booruData.prettyName.toLowerCase();
+    newTags.push(targetBooruData.importTag(sourceName));
+  }
   tagInput.value = newTags.join(', ');
 
   // add description
-  $('#image_description, #image_description, #post_description').value = processDescription(description, imageID, booruData, metadata);
+  $('#image_description, #image_description, #post_description').value = processDescription(
+    description,
+    imageID,
+    booruData,
+    targetBooruData,
+    metadata
+  );
 
   // revert tag editor
   if (fancyEditor) {
@@ -441,8 +464,7 @@ function initUI(){
   }
 }
 
-function processDescription(originalDescription, imageID, sourceBooruData, imgJson) {
-  const {booru: targetBooruData} = matchDomain(window.location.host);
+function processDescription(originalDescription, imageID, sourceBooruData, targetBooruData, imgJson) {
   const {primaryDomain, prettyName} = sourceBooruData;
   const emptyDesc = (originalDescription === '');
   const imgPath = (!sourceBooruData.bor) ? 'images' : 'posts';
