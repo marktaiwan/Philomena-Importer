@@ -257,7 +257,7 @@ async function importImage(imageID, booruData) {
   // special case for svg uploads
   const fileURL = (mimeType !== 'image/svg+xml')
     ? metadata.representations.full
-    : metadata.representations.full.replace('/view/', /download/).replace(/\.\w+$/, '.svg');
+    : metadata.representations.full.replace('/view/', '/download/').replace(/\.\w+$/, '.svg');
 
   const tagInput = $('#image_tag_input, #tags-form_tag_input, #post_tag_input');
   const fancyEditor = tagInput.classList.contains('hidden');
