@@ -458,7 +458,7 @@ function initUI(){
     filePicker?.parentElement.after(div);
   }
 
-  // scraper button is also used on reverse serach page, filter using form action
+  // scraper button is also used on reverse search page, filter using form action
   if (scraperInput && scraperInput.closest('form[action="/images"], form[action="/posts"]')) {
     initImageImport();
   }
