@@ -26,11 +26,6 @@ interface SettingSelection extends SettingBase {
   selections: Array<{text: string, value: string}>;
 }
 
-interface FieldsetConfig {
-  title: string;
-  id: string;
-}
-
 interface ConfigObject {
   title: string;
   id: string;
