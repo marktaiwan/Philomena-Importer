@@ -1,0 +1,30 @@
+{
+    "namespace": "https://github.com/marktaiwan/",
+    "homepageURL": "https://github.com/marktaiwan/Philomena-Importer",
+    "supportURL": "https://github.com/marktaiwan/Philomena-Importer/issues",
+    "match": [
+        "*://*.derpibooru.org/*",
+        "*://*.trixiebooru.org/*",
+        "*://*.ronxgr5zb4dkwdpt.onion/*",
+        "*://*.ponybooru.org/*",
+        "*://*.ponerpics.org/*",
+        "*://*.ponerpics.com/*",
+        "*://*.twibooru.org/*"
+    ],
+    "connect": [
+        "derpibooru.org",
+        "derpicdn.net",
+        "ponybooru.org",
+        "ponerpics.org",
+        "ponerpics.com"
+    ],
+    "grant": [
+        "GM_xmlhttpRequest"
+    ],
+    "inject-into": "content",
+    "noframes": true,
+    "require": [
+        "https://github.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/raw/master/derpi-four-u.js?v1.2.3",
+        "https://cdn.jsdelivr.net/npm/marked@2.0.3/marked.min.js"
+    ]
+}
