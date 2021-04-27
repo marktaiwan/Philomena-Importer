@@ -1,6 +1,6 @@
 import {DEFAULT_TAG_BLACKLIST, config, LINK_FIX, INDICATE_IMPORT,
   ORIG_UPLOAD_DATE, ORIG_UPLOADER, TAG_FILTER, SUB_DEFAULT} from './const';
-import {textileToMarkdown} from './markupTransform';
+import {textileToMarkdown, markdownToTextile} from './markupTransform';
 import type {Philomena, Twibooru} from '../types/BooruApi';
 
 function processDescription(
@@ -42,6 +42,7 @@ function processDescription(
   // Half-assed textile <-> markdown conversion for Twibooru
   if (!emptyDesc || INDICATE_IMPORT) {
     if (targetBooruData.markdown && !sourceBooruData.markdown) desc = textileToMarkdown(desc);
+    if (sourceBooruData.markdown && !targetBooruData.markdown) desc = markdownToTextile(desc, primaryDomain);
   }
 
   if (INDICATE_IMPORT) {

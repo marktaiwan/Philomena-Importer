@@ -1,5 +1,7 @@
+import markedjs from './markedjsWrapper';
+
 type SyntaxMapping = {
-  textile: {open: string, close?: string},
+  textile: {open: string, close?: string, multiline?: boolean},
   markdown: {open: string, close?: string},
 };
 
@@ -173,4 +175,36 @@ function textileToMarkdown(text: string): string {
   return text;
 }
 
-export {textileToMarkdown};
+function markdownRegExpMaker(open: string, close: string, flag: string): RegExp {
+  open = escapeRegExp(open);
+  close = escapeRegExp(close);
+  return new RegExp(`${open}(?!${close})(\\S(?:(?:.|\n)*?\\S)??)${close}`, flag);
+}
+
+function markdownToTextile(text: string, baseUrl = ''): string {
+  const tagMapping: SyntaxMapping[] = [
+    {markdown: {open: '_'}, textile: {open: '+', multiline: false}},
+    {markdown: {open: '=='}, textile: {open: '[spoiler]', close: '[/spoiler]', multiline: true}},
+  ];
+  // Markedjs doesn't support spoiler and underline
+  for (const {markdown, textile} of tagMapping) {
+    markdown.close ??= markdown.open;
+    textile.close ??= textile.open;
+    text = text.replace(
+      markdownRegExpMaker(markdown.open, markdown.close, 'g'),
+      (matched, p1) => {
+        let open = textile.open;
+        let close = textile.close;
+        if ((/\n/).test(p1) && !textile.multiline) {
+          open = '[' + open;
+          close = close + ']';
+        }
+        return open + p1 + close;
+      }
+    );
+  }
+  text = markedjs(text, baseUrl);
+  return text;
+}
+
+export {textileToMarkdown, markdownToTextile};
