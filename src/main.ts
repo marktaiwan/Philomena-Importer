@@ -40,7 +40,7 @@ function initTagImport(): void {
 }
 
 function initImageImport(): void {
-  const scraperInput = $('#image_scraper_url, #scraper_url') as HTMLInputElement;
+  const scraperInput = $<HTMLInputElement>('#image_scraper_url, #scraper_url');
   const importButton = create('button');
   importButton.setAttribute('class', 'button button--separate-left');
   importButton.type = 'button';
@@ -60,7 +60,7 @@ function initImageImport(): void {
   });
 }
 
-function initUI() {
+function initUI(): void {
   const content = $('#content');                      // the closest parent element that persists after saving tags
   const imageTarget = $('#image_target');             // used to check for image page
   const noThumb = $('#thumbnails-not-yet-generated'); // used to check for image page during image processing
