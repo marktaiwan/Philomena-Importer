@@ -1,4 +1,5 @@
 import {boorus} from '../const';
+import {escapeRegExp} from './common';
 
 function getImageInfo(url: string): {id: string, booruData: BooruRecord} {
   try {
@@ -34,7 +35,7 @@ function getImageInfo(url: string): {id: string, booruData: BooruRecord} {
 function matchDomain(domain: string): {booru: BooruRecord, validDomains: string[]} {
   for (const booru of Object.values(boorus)) {
     const validDomains = [...booru.booruDomains, ...booru.cdnDomains];
-    if (validDomains.includes(domain)) {
+    if (validDomains.some(validDomain => RegExp(`${escapeRegExp(validDomain)}$`, 'i').test(domain))) {
       return {booru, validDomains};
     }
   }

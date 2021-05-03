@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.8.0
+// @version     1.8.1
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -40,6 +40,9 @@
     return /^(?:https?:)?\/\//.test(path)
       ? path
       : domain + (path.startsWith('/') ? path : '/' + path);
+  }
+  function escapeRegExp(str) {
+    return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
   }
 
   const SCRIPT_ID = 'image_importer';
@@ -257,7 +260,9 @@
   function matchDomain(domain) {
     for (const booru of Object.values(boorus)) {
       const validDomains = [...booru.booruDomains, ...booru.cdnDomains];
-      if (validDomains.includes(domain)) {
+      if (
+        validDomains.some(validDomain => RegExp(`${escapeRegExp(validDomain)}$`, 'i').test(domain))
+      ) {
         return {booru, validDomains};
       }
     }
@@ -422,9 +427,6 @@
     return marked.parse(text);
   }
 
-  function escapeRegExp(str) {
-    return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-  }
   function textileRegExpMaker(open, close, flag) {
     open = escapeRegExp(open);
     close = escapeRegExp(close);
