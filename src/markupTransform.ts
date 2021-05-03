@@ -1,13 +1,10 @@
+import {escapeRegExp} from './util';
 import markedjs from './markedjsWrapper';
 
 type SyntaxMapping = {
   textile: {open: string, close?: string, multiline?: boolean},
   markdown: {open: string, close?: string},
 };
-
-function escapeRegExp(str: string): string {
-  return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-}
 
 function textileRegExpMaker(open: string, close: string, flag: string): RegExp {
   open = escapeRegExp(open);

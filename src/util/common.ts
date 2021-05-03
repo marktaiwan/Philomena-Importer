@@ -56,6 +56,10 @@ function makeQueryString(queries: QueryVariableSet): string {
     .join('&');
 }
 
+function escapeRegExp(str: string): string {
+  return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
 export {
   $,
   $$,
@@ -63,5 +67,6 @@ export {
   makeAbsolute,
   getQueryVariable,
   getQueryVariableAll,
-  makeQueryString
+  makeQueryString,
+  escapeRegExp,
 };
