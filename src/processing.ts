@@ -46,7 +46,8 @@ function processDescription(
   }
 
   if (INDICATE_IMPORT) {
-    const {created_at, uploader} = imgJson;
+    const created_at = imgJson.created_at;
+    const uploader = ('uploader' in imgJson) ? imgJson.uploader : 'Anonymous';
     let msg = (targetBooruData.markdown)
       ? `[[Imported from ${prettyName}]](${primaryDomain}/${imgPath}/${imageID})`
       : `"[Imported from ${prettyName}]":${primaryDomain}/${imgPath}/${imageID}`;

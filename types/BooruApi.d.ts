@@ -1,9 +1,15 @@
 declare namespace ImageResponse {
   type Format = 'jpg' | 'jpeg' | 'png' | 'gif' | 'svg' | 'webm' | 'mp4';
   type MimeType = 'image/jpeg' | 'image/png' | 'image/gif' | 'image/svg+xml' | 'video/webm' | 'video/mp4';
+  interface Intensities {
+    ne: number;
+    nw: number;
+    se: number;
+    sw: number;
+  }
   interface Representations {
     full: string;
-    tall: string;
+    tall?: string;
     large: string;
     medium: string;
     small: string;
@@ -14,30 +20,42 @@ declare namespace ImageResponse {
     mp4?: string;
   }
   interface ImageObject {
+    animated: boolean;
     aspect_ratio: number;
     comment_count: number;
     created_at: string;
+    deletion_reason: string | null;
     description: string;
     downvotes: number;
+    duplicate_of?: number | null;
     duration: number;
     faves: number;
     first_seen_at: string;
+    format: ImageResponse.Format;
     height: number;
+    hidden_from_users: boolean;
     id: number;
+    intensities: Intensities;
     mime_type: MimeType;
+    name: string;
     orig_sha512_hash: string;
     sha512_hash: string;
     processed: boolean;
     representations: Representations;
     score: number;
+    size: number;
     source_url: string;
     spoilered: boolean;
     tag_count: number;
     tag_ids: number[];
+    tags: string[];
+    thumbnails_generated: boolean;
     updated_at: string;
     uploader_id: number | null;
     upvotes: number;
+    view_url: string;
     width: number;
+    wilson_score: number;
   }
 }
 
@@ -55,26 +73,9 @@ declare namespace Philomena {
   }
   namespace Image {
     interface ImageObject extends ImageResponse.ImageObject {
-      animated: boolean;
-      deletion_reason: string | null;
-      duplicate_of: number | null;
-      format: ImageResponse.Format;
-      hidden_from_users: boolean;
-      intensities: Intensities;
-      name: string;
-      size: number;
-      tags: string[];
-      thumbnails_generated: boolean;
       uploader: string | null;
-      view_url: string;
-      wilson_score: number;
     }
-    interface Intensities {
-      ne: number;
-      nw: number;
-      se: number;
-      sw: number;
-    }
+
   }
   interface InteractionBase {
     user_id: number;
@@ -94,24 +95,19 @@ declare namespace Philomena {
 declare namespace Twibooru {
   namespace Api {
     type Search = {
-      search: Image.ImageObject[],
-      interactions: Interaction[],
+      posts: Image.ImageObject[],
+      // interactions: Interaction[],
       total: number,
     };
-    type Image = Image.ImageObject;
+    type Image = {
+      post: Image.ImageObject,
+    };
   }
   namespace Image {
     interface ImageObject extends ImageResponse.ImageObject {
-      file_name: string;
-      image: string;
-      interactions: Interaction[];
-      is_rendered: boolean;
+      // interactions: Interaction[];
       locations: Location[];
       media_type: 'image' | 'paste';
-      original_format: ImageResponse.Format;
-      tags: string;
-      uploader_id: null;
-      uploader: 'Anonymous';
     }
     interface Location {
       location: 'derpibooru' | string;

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.8.1
+// @version     1.8.2
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -288,8 +288,8 @@
   function fetchMeta(imageID, booruData) {
     const {primaryDomain} = booruData;
     const requestURL = booruData.bor
-      ? `${primaryDomain}/posts/${imageID}.json`
-      : `${primaryDomain}/api/v1/json/images/` + imageID;
+      ? `${primaryDomain}/api/v3/posts/${imageID}`
+      : `${primaryDomain}/api/v1/json/images/${imageID}`;
     return makeRequest(requestURL).then(resp => resp.response);
   }
   function makeRequest(url, responseType = 'json', onprogress, button) {
@@ -653,7 +653,8 @@
         desc = markdownToTextile(desc, primaryDomain);
     }
     if (INDICATE_IMPORT) {
-      const {created_at, uploader} = imgJson;
+      const created_at = imgJson.created_at;
+      const uploader = 'uploader' in imgJson ? imgJson.uploader : 'Anonymous';
       let msg = targetBooruData.markdown
         ? `[[Imported from ${prettyName}]](${primaryDomain}/${imgPath}/${imageID})`
         : `"[Imported from ${prettyName}]":${primaryDomain}/${imgPath}/${imageID}`;
@@ -716,12 +717,15 @@
     importButton.innerText = 'Loading...';
     // fetch image metadata
     const json = await fetchMeta(imageID, booruData);
-    const metadata = booruData.bor ? json : json.image;
-    const {description, mime_type: mimeType, source_url: source} = metadata;
-    // handle differences in response between booru-on-rails and philomena
-    const tags = booruData.bor ? tagsToArray(metadata.tags) : metadata.tags;
-    const name = booruData.bor ? metadata.file_name : metadata.name;
-    const ext = booruData.bor ? metadata.original_format : metadata.format;
+    const metadata = booruData.bor ? json.post : json.image;
+    const {
+      description,
+      mime_type: mimeType,
+      source_url: source,
+      tags,
+      name,
+      format: ext,
+    } = metadata;
     const imgPath = booruData.bor ? 'posts' : 'images';
     // booru-on-rail doesn't accept filenames without extension
     const fileName = /\.(?:jpg|jpeg|png|gif|webm|mp4)$/i.test(name) ? name : name + '.' + ext;
@@ -800,8 +804,7 @@
     }
     // fetch image metadata
     const json = await fetchMeta(imageID, booruData);
-    // booru-on-rails returns the tags as comma separated string
-    const tags = booruData.bor ? tagsToArray(json.tags) : json.image.tags;
+    const tags = booruData.bor ? json.post.tags : json.image.tags;
     const fetchedTags = performTagFilter(tags);
     const tagPool = tagsToArray(tagInput.value);
     // append tags

@@ -3,8 +3,8 @@ import type {Twibooru, Philomena} from '../types/BooruApi';
 function fetchMeta(imageID: string, booruData: BooruRecord): Promise<Philomena.Api.Image | Twibooru.Api.Image> {
   const {primaryDomain} = booruData;
   const requestURL = (booruData.bor)
-    ? `${primaryDomain}/posts/${imageID}.json`
-    : `${primaryDomain}/api/v1/json/images/` + imageID;
+    ? `${primaryDomain}/api/v3/posts/${imageID}`
+    : `${primaryDomain}/api/v1/json/images/${imageID}`;
   return makeRequest(requestURL).then(resp => resp.response);
 }
 

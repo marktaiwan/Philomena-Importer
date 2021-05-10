@@ -12,13 +12,14 @@ async function importImage(imageID: string, booruData: BooruRecord): Promise<voi
 
   // fetch image metadata
   const json = await fetchMeta(imageID, booruData);
-  const metadata = (booruData.bor) ? json as Twibooru.Api.Image : json.image as Philomena.Image.ImageObject;
-  const {description, mime_type: mimeType, source_url: source} = metadata;
-
-  // handle differences in response between booru-on-rails and philomena
-  const tags = (booruData.bor) ? tagsToArray((metadata as Twibooru.Api.Image).tags) : (metadata as Philomena.Image.ImageObject).tags;
-  const name = (booruData.bor) ? (metadata as Twibooru.Api.Image).file_name : (metadata as Philomena.Image.ImageObject).name;
-  const ext = (booruData.bor) ? (metadata as Twibooru.Api.Image).original_format : (metadata as Philomena.Image.ImageObject).format;
+  const metadata = (booruData.bor) ? (json as Twibooru.Api.Image).post : (json as Philomena.Api.Image).image;
+  const {
+    description,
+    mime_type: mimeType,
+    source_url: source,
+    tags, name,
+    format: ext
+  } = metadata;
   const imgPath = (booruData.bor) ? 'posts' : 'images';
 
   // booru-on-rail doesn't accept filenames without extension
@@ -114,9 +115,7 @@ async function importTags(imageID: string, booruData: BooruRecord): Promise<void
 
   // fetch image metadata
   const json = await fetchMeta(imageID, booruData);
-
-  // booru-on-rails returns the tags as comma separated string
-  const tags = (booruData.bor) ? tagsToArray((json as Twibooru.Api.Image).tags) : (json as Philomena.Api.Image).image.tags;
+  const tags = (booruData.bor) ? (json as Twibooru.Api.Image).post.tags : (json as Philomena.Api.Image).image.tags;
   const fetchedTags = performTagFilter(tags);
   const tagPool = tagsToArray(tagInput.value);
 
