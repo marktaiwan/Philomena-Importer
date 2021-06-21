@@ -7,12 +7,14 @@ const boorus: Boorus = {
     prettyName: 'Derpibooru',
     booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
     cdnDomains: ['derpicdn.net'],
+    uploadPage: '/images/new',
   },
   ponybooru: {
     primaryDomain: 'https://ponybooru.org',
     prettyName: 'Ponybooru',
     booruDomains: ['ponybooru.org'],
     cdnDomains: ['cdn.ponybooru.org'],
+    uploadPage: '/images/new',
     importTag: siteName => `${siteName} import`,
   },
   ponerpics: {
@@ -20,6 +22,7 @@ const boorus: Boorus = {
     prettyName: 'Ponerpics',
     booruDomains: ['ponerpics.org', 'ponerpics.com'],
     cdnDomains: ['ponerpics.org', 'ponerpics.com'],
+    uploadPage: '/images/new',
     importTag: siteName => `imported from ${siteName}`,
   },
   twibooru: {
@@ -27,6 +30,7 @@ const boorus: Boorus = {
     prettyName: 'Twibooru',
     booruDomains: ['twibooru.org', 'twibooru.com'],
     cdnDomains: ['cdn.twibooru.org', 'cdn.twibooru.com'],
+    uploadPage: '/posts/new',
     importTag: siteName => `${siteName} import`,
     bor: true,
     markdown: true,
@@ -86,6 +90,13 @@ const config = ConfigManager(
   SCRIPT_ID,
   'Import image and tags from Philomena-based boorus.'
 );
+config.registerSetting({
+  title: 'Quick upload',
+  key: 'quick_upload',
+  description: 'Turn the upload button into a dropdown menu for uploading current image to other sites.',
+  type: 'checkbox',
+  defaultValue: true
+});
 config.registerSetting({
   title: 'Link correction',
   key: 'link_fix',
@@ -155,6 +166,7 @@ const tagEntry = tagFieldset.registerSetting({
   defaultValue: DEFAULT_TAG_BLACKLIST.join(', ')
 });
 
+const QUICK_UPLOAD = config.getEntry('quick_upload') as boolean;
 const LINK_FIX = config.getEntry('link_fix') as boolean;
 const ORIGIN_SOURCE = config.getEntry('origin_source') as boolean;
 const INDICATE_IMPORT = config.getEntry('indicate_import') as boolean;
@@ -196,6 +208,7 @@ export {
   boorus,
   DEFAULT_TAG_BLACKLIST,
   config,
+  QUICK_UPLOAD,
   LINK_FIX,
   ORIGIN_SOURCE,
   INDICATE_IMPORT,

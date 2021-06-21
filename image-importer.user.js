@@ -52,12 +52,14 @@
       prettyName: 'Derpibooru',
       booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
       cdnDomains: ['derpicdn.net'],
+      uploadPage: '/images/new',
     },
     ponybooru: {
       primaryDomain: 'https://ponybooru.org',
       prettyName: 'Ponybooru',
       booruDomains: ['ponybooru.org'],
       cdnDomains: ['cdn.ponybooru.org'],
+      uploadPage: '/images/new',
       importTag: siteName => `${siteName} import`,
     },
     ponerpics: {
@@ -65,6 +67,7 @@
       prettyName: 'Ponerpics',
       booruDomains: ['ponerpics.org', 'ponerpics.com'],
       cdnDomains: ['ponerpics.org', 'ponerpics.com'],
+      uploadPage: '/images/new',
       importTag: siteName => `imported from ${siteName}`,
     },
     twibooru: {
@@ -72,6 +75,7 @@
       prettyName: 'Twibooru',
       booruDomains: ['twibooru.org', 'twibooru.com'],
       cdnDomains: ['cdn.twibooru.org', 'cdn.twibooru.com'],
+      uploadPage: '/posts/new',
       importTag: siteName => `${siteName} import`,
       bor: true,
       markdown: true,
@@ -130,6 +134,14 @@
     SCRIPT_ID,
     'Import image and tags from Philomena-based boorus.'
   );
+  config.registerSetting({
+    title: 'Quick upload',
+    key: 'quick_upload',
+    description:
+      'Turn the upload button into a dropdown menu for uploading current image to other sites.',
+    type: 'checkbox',
+    defaultValue: true,
+  });
   config.registerSetting({
     title: 'Link correction',
     key: 'link_fix',
@@ -197,6 +209,7 @@
     type: 'text',
     defaultValue: DEFAULT_TAG_BLACKLIST.join(', '),
   });
+  const QUICK_UPLOAD = config.getEntry('quick_upload');
   const LINK_FIX = config.getEntry('link_fix');
   const ORIGIN_SOURCE = config.getEntry('origin_source');
   const INDICATE_IMPORT = config.getEntry('indicate_import');
@@ -229,33 +242,25 @@
   oldInput.classList.add('hidden');
 
   function getImageInfo(url) {
-    try {
-      const domainRegexStr = concatDomains(boorus, 'booruDomains');
-      const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
-      const regex = new RegExp(
-        'https?://(?:www\\.)?(?:' +
-          `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
-          `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
-          ')',
-        'i'
-      );
-      const result = regex.exec(url);
-      if (result === null) {
-        throw Error('no_match');
-      }
-      const {domain, cdn, domID, cdnID} = result.groups;
-      const id = domID || cdnID;
-      const matchedDomain = domain || cdn;
-      const booruData = getDomainInfo(matchedDomain);
-      return {id, booruData};
-    } catch (exception) {
-      if (exception.message === 'no_match') {
-        console.error('Failed to match input URL.');
-      } else if (exception.message === 'same_site') {
-        console.error("You can't import images from the same site. Moron.");
-      }
-      throw exception;
+    const domainRegexStr = concatDomains(boorus, 'booruDomains');
+    const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
+    const regex = new RegExp(
+      'https?://(?:www\\.)?(?:' +
+        `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
+        `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
+        ')',
+      'i'
+    );
+    const result = regex.exec(url);
+    if (result === null) {
+      console.error('Failed to match input URL.');
+      return;
     }
+    const {domain, cdn, domID, cdnID} = result.groups;
+    const id = domID || cdnID;
+    const matchedDomain = domain || cdn;
+    const booruData = getDomainInfo(matchedDomain);
+    return {id, booruData};
   }
   function matchDomain(domain) {
     for (const booru of Object.values(boorus)) {
@@ -278,11 +283,11 @@
     return arr.join('|');
   }
   function getDomainInfo(domain) {
-    const {booru, validDomains} = matchDomain(domain);
-    if (validDomains.includes(window.location.host)) {
-      throw Error('same_site');
-    }
+    const {booru} = matchDomain(domain);
     return booru;
+  }
+  function isSameSite(domainlist) {
+    return domainlist.includes(window.location.host);
   }
 
   function fetchMeta(imageID, booruData) {
@@ -711,7 +716,7 @@
   }
 
   async function importImage(imageID, booruData) {
-    const {booru: targetBooruData} = matchDomain(window.location.host);
+    const targetBooruData = getDomainInfo(window.location.host);
     const {primaryDomain} = booruData;
     const importButton = $(`#${SCRIPT_ID}_import_button`);
     importButton.innerText = 'Loading...';
@@ -852,7 +857,9 @@
       e.stopPropagation();
       e.preventDefault();
       const url = input.value.trim();
-      const {id, booruData} = getImageInfo(url);
+      const info = getImageInfo(url);
+      if (!info) return;
+      const {id, booruData} = info;
       importTags(id, booruData);
     });
     $('.field', tagsForm).prepend(field);
@@ -871,14 +878,61 @@
       e.preventDefault();
       const url = scraperInput.value.trim();
       const {id, booruData} = getImageInfo(url);
+      if (isSameSite(booruData.booruDomains)) {
+        console.error("You can't import images from the same site.");
+        return;
+      }
       importImage(id, booruData);
     });
+  }
+  function createMenuItem(text, href, title) {
+    const anchor = document.createElement('a');
+    anchor.classList.add('header__link');
+    anchor.classList.add(`${SCRIPT_ID}_link`);
+    anchor.relList.add('noopener');
+    anchor.referrerPolicy = 'origin';
+    anchor.innerText = text;
+    anchor.href = href;
+    anchor.title = title;
+    return anchor;
+  }
+  function initUploadList() {
+    const {id: imageId, booruData: sourceBooru} = getImageInfo(window.location.href);
+    const uploadButton = $(`a.header__link[href="${sourceBooru.uploadPage}"]`);
+    if (!QUICK_UPLOAD || !uploadButton) return;
+    const dropdown = create('div');
+    dropdown.classList.add('dropdown', 'header__dropdown', `${SCRIPT_ID}__menu`);
+    const nav = create('nav');
+    nav.classList.add('dropdown__content');
+    const downCaret = create('i');
+    downCaret.classList.add('fa', 'fa-caret-down');
+    uploadButton.append(' ', downCaret);
+    for (const booru of Object.values(boorus)) {
+      const {prettyName, primaryDomain, uploadPage} = booru;
+      if (!uploadPage || isSameSite(booru.booruDomains)) continue;
+      const sourceUrl = `${sourceBooru.primaryDomain}/${
+        sourceBooru.bor ? 'posts' : 'images'
+      }/${imageId}`;
+      const url = new URL(primaryDomain + uploadPage);
+      url.searchParams.append('import_from', sourceUrl);
+      nav.append(createMenuItem(prettyName, url.toString(), `Upload this image to ${prettyName}`));
+    }
+    uploadButton.after(dropdown);
+    dropdown.append(uploadButton, nav);
+  }
+  function autorun() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const url = searchParams.get('import_from');
+    if (!url) return;
+    const {id, booruData} = getImageInfo(url);
+    importImage(id, booruData);
   }
   function initUI() {
     const content = $('#content'); // the closest parent element that persists after saving tags
     const imageTarget = $('#image_target'); // used to check for image page
     const noThumb = $('#thumbnails-not-yet-generated'); // used to check for image page during image processing
     let scraperInput = $('#image_scraper_url, #scraper_url'); // image scraper field
+    // runs on image pages
     if (content && (imageTarget || noThumb)) {
       const observer = new MutationObserver(records => {
         for (const record of records) {
@@ -891,6 +945,7 @@
       });
       observer.observe(content, {childList: true});
       initTagImport();
+      initUploadList();
     }
     if (!scraperInput && $('form[action="/images"]')) {
       // Ponerpics doesn't have scraper enabled
@@ -904,9 +959,11 @@
       div.append(scraperInput);
       filePicker?.parentElement.after(div);
     }
+    // runs on upload page
     // scraper button is also used on reverse search page, filter using form action
     if (scraperInput && scraperInput.closest('form[action="/images"], form[action="/posts"]')) {
       initImageImport();
+      autorun();
     }
   }
   initUI();

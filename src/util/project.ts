@@ -2,34 +2,26 @@ import {boorus} from '../const';
 import {escapeRegExp} from './common';
 
 function getImageInfo(url: string): {id: string, booruData: BooruRecord} {
-  try {
-    const domainRegexStr = concatDomains(boorus, 'booruDomains');
-    const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
-    const regex = new RegExp(
-      'https?://(?:www\\.)?(?:' +
-      `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
-      `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
-      ')', 'i');
+  const domainRegexStr = concatDomains(boorus, 'booruDomains');
+  const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
+  const regex = new RegExp(
+    'https?://(?:www\\.)?(?:' +
+    `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
+    `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
+    ')', 'i');
 
-    const result = regex.exec(url);
-    if (result === null) {
-      throw Error('no_match');
-    }
-
-    const {domain, cdn, domID, cdnID} = result.groups;
-    const id = domID || cdnID;
-    const matchedDomain = domain || cdn;
-    const booruData = getDomainInfo(matchedDomain);
-
-    return {id, booruData};
-  } catch (exception) {
-    if (exception.message === 'no_match') {
-      console.error('Failed to match input URL.');
-    } else if (exception.message === 'same_site') {
-      console.error('You can\'t import images from the same site. Moron.');
-    }
-    throw exception;
+  const result = regex.exec(url);
+  if (result === null) {
+    console.error('Failed to match input URL.');
+    return;
   }
+
+  const {domain, cdn, domID, cdnID} = result.groups;
+  const id = domID || cdnID;
+  const matchedDomain = domain || cdn;
+  const booruData = getDomainInfo(matchedDomain);
+
+  return {id, booruData};
 }
 
 function matchDomain(domain: string): {booru: BooruRecord, validDomains: string[]} {
@@ -53,11 +45,12 @@ function concatDomains(boorus: Boorus, prop: 'booruDomains' | 'cdnDomains'): str
 }
 
 function getDomainInfo(domain: string): BooruRecord {
-  const {booru, validDomains} = matchDomain(domain);
-  if (validDomains.includes(window.location.host)) {
-    throw Error('same_site');
-  }
+  const {booru} = matchDomain(domain);
   return booru;
 }
 
-export {getImageInfo, matchDomain};
+function isSameSite(domainlist: string[]): boolean {
+  return domainlist.includes(window.location.host);
+}
+
+export {getImageInfo, getDomainInfo, isSameSite};

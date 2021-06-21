@@ -1,5 +1,5 @@
-import {SCRIPT_ID} from './const';
-import {$, create, getImageInfo} from './util';
+import {boorus, SCRIPT_ID, QUICK_UPLOAD} from './const';
+import {$, create, getImageInfo, isSameSite} from './util';
 import {importImage, importTags} from './import';
 
 function initTagImport(): void {
@@ -32,7 +32,9 @@ function initTagImport(): void {
     e.preventDefault();
 
     const url = input.value.trim();
-    const {id, booruData} = getImageInfo(url);
+    const info = getImageInfo(url);
+    if (!info) return;
+    const {id, booruData} = info;
     importTags(id, booruData);
   });
 
@@ -56,8 +58,65 @@ function initImageImport(): void {
     const url = scraperInput.value.trim();
     const {id, booruData} = getImageInfo(url);
 
+    if (isSameSite(booruData.booruDomains)) {
+      console.error('You can\'t import images from the same site.');
+      return;
+    }
     importImage(id, booruData);
   });
+}
+
+function createMenuItem(text: string, href: string, title?: string): HTMLAnchorElement {
+  const anchor = document.createElement('a');
+  anchor.classList.add('header__link');
+  anchor.classList.add(`${SCRIPT_ID}_link`);
+  anchor.relList.add('noopener');
+  anchor.referrerPolicy = 'origin';
+  anchor.innerText = text;
+  anchor.href = href;
+  anchor.title = title;
+  return anchor;
+}
+
+function initUploadList(): void {
+  const {id: imageId, booruData: sourceBooru} = getImageInfo(window.location.href);
+  const uploadButton = $<HTMLAnchorElement>(`a.header__link[href="${sourceBooru.uploadPage}"]`);
+  if (!QUICK_UPLOAD || !uploadButton) return;
+
+  const dropdown = create('div');
+  dropdown.classList.add('dropdown', 'header__dropdown', `${SCRIPT_ID}__menu`);
+
+  const nav = create('nav');
+  nav.classList.add('dropdown__content');
+
+  const downCaret = create('i');
+  downCaret.classList.add('fa', 'fa-caret-down');
+  uploadButton.append(' ', downCaret);
+
+  for (const booru of Object.values(boorus)) {
+    const {prettyName, primaryDomain, uploadPage} = booru;
+    if (!uploadPage || isSameSite(booru.booruDomains)) continue;
+    const sourceUrl = `${sourceBooru.primaryDomain}/${(sourceBooru.bor) ? 'posts' : 'images'}/${imageId}`;
+    const url = new URL(primaryDomain + uploadPage);
+    url.searchParams.append('import_from', sourceUrl);
+    nav.append(createMenuItem(
+      prettyName,
+      url.toString(),
+      `Upload this image to ${prettyName}`,
+    ));
+  }
+
+  uploadButton.after(dropdown);
+  dropdown.append(uploadButton, nav);
+}
+
+function autorun(): void {
+  const searchParams = new URLSearchParams(window.location.search);
+  const url = searchParams.get('import_from');
+  if (!url) return;
+
+  const {id, booruData} = getImageInfo(url);
+  importImage(id, booruData);
 }
 
 function initUI(): void {
@@ -67,6 +126,7 @@ function initUI(): void {
 
   let scraperInput = $<HTMLInputElement>('#image_scraper_url, #scraper_url'); // image scraper field
 
+  // runs on image pages
   if (content && (imageTarget || noThumb)) {
     const observer = new MutationObserver(records => {
       for (const record of records) {
@@ -79,7 +139,9 @@ function initUI(): void {
     });
     observer.observe(content, {childList: true});
     initTagImport();
+    initUploadList();
   }
+
   if (!scraperInput && $('form[action="/images"]')) {
     // Ponerpics doesn't have scraper enabled
     const filePicker = $('#image_image');
@@ -95,9 +157,11 @@ function initUI(): void {
     filePicker?.parentElement.after(div);
   }
 
+  // runs on upload page
   // scraper button is also used on reverse search page, filter using form action
   if (scraperInput && scraperInput.closest('form[action="/images"], form[action="/posts"]')) {
     initImageImport();
+    autorun();
   }
 }
 

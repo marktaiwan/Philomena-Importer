@@ -6,6 +6,7 @@ type BooruRecord = {
   importTag?: (siteName: string) => string,
   bor?: boolean,
   markdown?: boolean,
+  uploadPage?: string,
 };
 
 type Boorus = {[name: string]: BooruRecord};

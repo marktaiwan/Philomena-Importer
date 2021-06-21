@@ -1,11 +1,11 @@
-import {$, makeAbsolute, matchDomain} from './util';
+import {$, getDomainInfo, makeAbsolute} from './util';
 import {SCRIPT_ID, ORIGIN_SOURCE, INDICATE_IMPORT_TAG} from './const';
 import {makeRequest, fetchMeta} from './request';
 import {processDescription, tagsToArray, performTagFilter, performTagCleanUp} from './processing';
 import type {Philomena, Twibooru} from '../types/BooruApi';
 
 async function importImage(imageID: string, booruData: BooruRecord): Promise<void> {
-  const {booru: targetBooruData} = matchDomain(window.location.host);
+  const targetBooruData = getDomainInfo(window.location.host);
   const {primaryDomain} = booruData;
   const importButton = $(`#${SCRIPT_ID}_import_button`);
   importButton.innerText = 'Loading...';
