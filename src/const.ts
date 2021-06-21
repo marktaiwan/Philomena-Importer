@@ -2,13 +2,6 @@ import {$, create} from './util/common';
 
 const SCRIPT_ID = 'image_importer';
 const boorus: Boorus = {
-  derpibooru: {
-    primaryDomain: 'https://derpibooru.org',
-    prettyName: 'Derpibooru',
-    booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
-    cdnDomains: ['derpicdn.net'],
-    uploadPage: '/images/new',
-  },
   ponybooru: {
     primaryDomain: 'https://ponybooru.org',
     prettyName: 'Ponybooru',
@@ -34,6 +27,13 @@ const boorus: Boorus = {
     importTag: siteName => `${siteName} import`,
     bor: true,
     markdown: true,
+  },
+  derpibooru: {
+    primaryDomain: 'https://derpibooru.org',
+    prettyName: 'Derpibooru',
+    booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
+    cdnDomains: ['derpicdn.net'],
+    uploadPage: '/images/new',
   },
   manebooru: {
     primaryDomain: 'https://manebooru.art/',

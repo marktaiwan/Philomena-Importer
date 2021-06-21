@@ -47,13 +47,6 @@
 
   const SCRIPT_ID = 'image_importer';
   const boorus = {
-    derpibooru: {
-      primaryDomain: 'https://derpibooru.org',
-      prettyName: 'Derpibooru',
-      booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
-      cdnDomains: ['derpicdn.net'],
-      uploadPage: '/images/new',
-    },
     ponybooru: {
       primaryDomain: 'https://ponybooru.org',
       prettyName: 'Ponybooru',
@@ -79,6 +72,13 @@
       importTag: siteName => `${siteName} import`,
       bor: true,
       markdown: true,
+    },
+    derpibooru: {
+      primaryDomain: 'https://derpibooru.org',
+      prettyName: 'Derpibooru',
+      booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
+      cdnDomains: ['derpicdn.net'],
+      uploadPage: '/images/new',
     },
     manebooru: {
       primaryDomain: 'https://manebooru.art/',
