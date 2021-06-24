@@ -1,7 +1,7 @@
 {
     "displayName": "Derpibooru Image Importer",
     "name": "image-importer",
-    "version": "1.9.0",
+    "version": "1.9.1",
     "description": "Import image and tags from Philomena-based boorus",
     "private": true,
     "author": "Marker",

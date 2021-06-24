@@ -69,6 +69,7 @@ const DEFAULT_TAG_BLACKLIST = [
   'jpeg',
   'manebooru exclusive',
   'manebooru original',
+  'mp4',
   'paste',
   'png',
   'politics in the comments',
