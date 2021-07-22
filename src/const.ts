@@ -34,6 +34,7 @@ const boorus: Boorus = {
     booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
     cdnDomains: ['derpicdn.net'],
     uploadPage: '/images/new',
+    importTag: siteName => `${siteName} import`,
   },
   manebooru: {
     primaryDomain: 'https://manebooru.art/',
