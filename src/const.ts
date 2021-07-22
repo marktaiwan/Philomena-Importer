@@ -71,6 +71,7 @@ const DEFAULT_TAG_BLACKLIST = [
   'manebooru original',
   'mp4',
   'paste',
+  'paywalled source',
   'png',
   'politics in the comments',
   'ponerpics exclusive',
