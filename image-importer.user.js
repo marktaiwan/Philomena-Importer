@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.9.1
+// @version     1.9.2
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -79,6 +79,7 @@
       booruDomains: ['derpibooru.org', 'trixiebooru.org', 'ronxgr5zb4dkwdpt.onion'],
       cdnDomains: ['derpicdn.net'],
       uploadPage: '/images/new',
+      importTag: siteName => `${siteName} import`,
     },
     manebooru: {
       primaryDomain: 'https://manebooru.art/',
@@ -116,6 +117,7 @@
     'manebooru original',
     'mp4',
     'paste',
+    'paywalled source',
     'png',
     'politics in the comments',
     'ponerpics exclusive',
