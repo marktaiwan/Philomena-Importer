@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.9.2
+// @version     1.9.3
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -694,6 +694,7 @@
     replaceTag(tagPool, 'glow-in-the-dark', 'glow in the dark');
     replaceTag(tagPool, 'unauthorized edit', 'edit');
     replaceTag(tagPool, 'pony pussy', 'anatomically correct');
+    replaceTag(tagPool, 'human on filly action', 'human on filly');
     return tagPool;
   }
   function addTag(tagPool, tagToAdd) {

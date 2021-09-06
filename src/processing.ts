@@ -91,6 +91,7 @@ function performTagCleanUp(tagPool: string[]): string[] {
   replaceTag(tagPool, 'glow-in-the-dark', 'glow in the dark');
   replaceTag(tagPool, 'unauthorized edit', 'edit');
   replaceTag(tagPool, 'pony pussy', 'anatomically correct');
+  replaceTag(tagPool, 'human on filly action', 'human on filly');
   return tagPool;
 }
 
