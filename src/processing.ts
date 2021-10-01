@@ -39,7 +39,7 @@ function processDescription(
     }
   }
 
-  // Half-assed textile <-> markdown conversion for Twibooru
+  // Half-assed textile <-> markdown conversion
   if (!emptyDesc || INDICATE_IMPORT) {
     if (targetBooruData.markdown && !sourceBooruData.markdown) desc = textileToMarkdown(desc);
     if (sourceBooruData.markdown && !targetBooruData.markdown) desc = markdownToTextile(desc, primaryDomain);

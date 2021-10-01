@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.9.3
+// @version     1.9.4
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -80,6 +80,7 @@
       cdnDomains: ['derpicdn.net'],
       uploadPage: '/images/new',
       importTag: siteName => `${siteName} import`,
+      markdown: true,
     },
     manebooru: {
       primaryDomain: 'https://manebooru.art/',
@@ -654,7 +655,7 @@
         );
       }
     }
-    // Half-assed textile <-> markdown conversion for Twibooru
+    // Half-assed textile <-> markdown conversion
     if (!emptyDesc || INDICATE_IMPORT) {
       if (targetBooruData.markdown && !sourceBooruData.markdown) desc = textileToMarkdown(desc);
       if (sourceBooruData.markdown && !targetBooruData.markdown)

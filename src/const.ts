@@ -35,6 +35,7 @@ const boorus: Boorus = {
     cdnDomains: ['derpicdn.net'],
     uploadPage: '/images/new',
     importTag: siteName => `${siteName} import`,
+    markdown: true,
   },
   manebooru: {
     primaryDomain: 'https://manebooru.art/',
