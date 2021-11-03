@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.9.4
+// @version     1.9.5
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -696,6 +696,8 @@
     replaceTag(tagPool, 'unauthorized edit', 'edit');
     replaceTag(tagPool, 'pony pussy', 'anatomically correct');
     replaceTag(tagPool, 'human on filly action', 'human on filly');
+    replaceTag(tagPool, 'gryphon', 'griffon');
+    replaceTag(tagPool, 'mobile phone', 'cellphone');
     return tagPool;
   }
   function addTag(tagPool, tagToAdd) {

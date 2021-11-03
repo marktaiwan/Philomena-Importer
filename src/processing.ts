@@ -1,5 +1,7 @@
-import {DEFAULT_TAG_BLACKLIST, config, LINK_FIX, INDICATE_IMPORT,
-  ORIG_UPLOAD_DATE, ORIG_UPLOADER, TAG_FILTER, SUB_DEFAULT} from './const';
+import {
+  DEFAULT_TAG_BLACKLIST, config, LINK_FIX, INDICATE_IMPORT,
+  ORIG_UPLOAD_DATE, ORIG_UPLOADER, TAG_FILTER, SUB_DEFAULT
+} from './const';
 import {textileToMarkdown, markdownToTextile} from './markupTransform';
 import type {Philomena, Twibooru} from '../types/BooruApi';
 
@@ -92,6 +94,8 @@ function performTagCleanUp(tagPool: string[]): string[] {
   replaceTag(tagPool, 'unauthorized edit', 'edit');
   replaceTag(tagPool, 'pony pussy', 'anatomically correct');
   replaceTag(tagPool, 'human on filly action', 'human on filly');
+  replaceTag(tagPool, 'gryphon', 'griffon');
+  replaceTag(tagPool, 'mobile phone', 'cellphone');
   return tagPool;
 }
 
