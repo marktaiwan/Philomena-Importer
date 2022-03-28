@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.9.5
+// @version     1.9.6
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -682,15 +682,7 @@
       : userFilter;
     return tagList.filter(tag => !filtered_tags.includes(tag));
   }
-  function performTagCleanUp(tagPool) {
-    if (tagPool.some(tag => tag.startsWith('artist:'))) removeTag(tagPool, 'artist needed');
-    if (tagPool.some(tag => tag.startsWith('oc:'))) removeTag(tagPool, 'unknown oc');
-    if (tagPool.some(tag => tag.startsWith('ponified:'))) {
-      tagPool.forEach(removeNamespace('ponified:'));
-      addTag(tagPool, 'ponified');
-    }
-    tagPool.forEach(removeNamespace('species:'));
-    tagPool.forEach(removeNamespace('character:'));
+  function performTagReplacement(tagPool) {
     replaceTag(tagPool, 'unofficial characters only', 'oc only');
     replaceTag(tagPool, 'glow-in-the-dark', 'glow in the dark');
     replaceTag(tagPool, 'unauthorized edit', 'edit');
@@ -698,6 +690,17 @@
     replaceTag(tagPool, 'human on filly action', 'human on filly');
     replaceTag(tagPool, 'gryphon', 'griffon');
     replaceTag(tagPool, 'mobile phone', 'cellphone');
+    if (tagPool.some(tag => tag.startsWith('ponified:'))) {
+      tagPool.forEach(removeNamespace('ponified:'));
+      addTag(tagPool, 'ponified');
+    }
+    tagPool.forEach(removeNamespace('species:'));
+    tagPool.forEach(removeNamespace('character:'));
+    return tagPool;
+  }
+  function performTagCleanUp(tagPool) {
+    if (tagPool.some(tag => tag.startsWith('artist:'))) removeTag(tagPool, 'artist needed');
+    if (tagPool.some(tag => tag.startsWith('oc:'))) removeTag(tagPool, 'unknown oc');
     return tagPool;
   }
   function addTag(tagPool, tagToAdd) {
@@ -764,6 +767,7 @@
       : '';
     // add tags
     const newTags = performTagFilter(tags);
+    performTagReplacement(newTags);
     performTagCleanUp(newTags);
     if (INDICATE_IMPORT_TAG && targetBooruData.importTag) {
       // site has a standardized tagging convention for imported images
@@ -819,6 +823,7 @@
     const tags = booruData.bor ? json.post.tags : json.image.tags;
     const fetchedTags = performTagFilter(tags);
     const tagPool = tagsToArray(tagInput.value);
+    performTagReplacement(fetchedTags);
     // append tags
     for (const tag of fetchedTags) {
       if (tagPool.includes(tag)) continue;

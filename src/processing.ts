@@ -80,15 +80,7 @@ function performTagFilter(tagList: string[]): string[] {
   return tagList.filter(tag => !filtered_tags.includes(tag));
 }
 
-function performTagCleanUp(tagPool: string[]): string[] {
-  if (tagPool.some(tag => tag.startsWith('artist:'))) removeTag(tagPool, 'artist needed');
-  if (tagPool.some(tag => tag.startsWith('oc:'))) removeTag(tagPool, 'unknown oc');
-  if (tagPool.some(tag => tag.startsWith('ponified:'))) {
-    tagPool.forEach(removeNamespace('ponified:'));
-    addTag(tagPool, 'ponified');
-  }
-  tagPool.forEach(removeNamespace('species:'));
-  tagPool.forEach(removeNamespace('character:'));
+function performTagReplacement(tagPool: string[]): string[] {
   replaceTag(tagPool, 'unofficial characters only', 'oc only');
   replaceTag(tagPool, 'glow-in-the-dark', 'glow in the dark');
   replaceTag(tagPool, 'unauthorized edit', 'edit');
@@ -96,6 +88,18 @@ function performTagCleanUp(tagPool: string[]): string[] {
   replaceTag(tagPool, 'human on filly action', 'human on filly');
   replaceTag(tagPool, 'gryphon', 'griffon');
   replaceTag(tagPool, 'mobile phone', 'cellphone');
+  if (tagPool.some(tag => tag.startsWith('ponified:'))) {
+    tagPool.forEach(removeNamespace('ponified:'));
+    addTag(tagPool, 'ponified');
+  }
+  tagPool.forEach(removeNamespace('species:'));
+  tagPool.forEach(removeNamespace('character:'));
+  return tagPool;
+}
+
+function performTagCleanUp(tagPool: string[]): string[] {
+  if (tagPool.some(tag => tag.startsWith('artist:'))) removeTag(tagPool, 'artist needed');
+  if (tagPool.some(tag => tag.startsWith('oc:'))) removeTag(tagPool, 'unknown oc');
   return tagPool;
 }
 
@@ -125,4 +129,4 @@ function tagsToArray(str: string): string[] {
   return str.split(',').map(tag => tag.trim());
 }
 
-export {processDescription, performTagFilter, performTagCleanUp, tagsToArray};
+export {processDescription, performTagFilter, performTagReplacement, performTagCleanUp, tagsToArray};

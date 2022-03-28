@@ -1,7 +1,7 @@
 import {$, getDomainInfo, makeAbsolute} from './util';
 import {SCRIPT_ID, ORIGIN_SOURCE, INDICATE_IMPORT_TAG} from './const';
 import {makeRequest, fetchMeta} from './request';
-import {processDescription, tagsToArray, performTagFilter, performTagCleanUp} from './processing';
+import {processDescription, tagsToArray, performTagFilter, performTagReplacement, performTagCleanUp} from './processing';
 import type {Philomena, Twibooru} from '../types/BooruApi';
 
 async function importImage(imageID: string, booruData: BooruRecord): Promise<void> {
@@ -17,7 +17,8 @@ async function importImage(imageID: string, booruData: BooruRecord): Promise<voi
     description,
     mime_type: mimeType,
     source_url: source,
-    tags, name,
+    tags,
+    name,
     format: ext
   } = metadata;
   const imgPath = (booruData.bor) ? 'posts' : 'images';
@@ -53,6 +54,7 @@ async function importImage(imageID: string, booruData: BooruRecord): Promise<voi
 
   // add tags
   const newTags = performTagFilter(tags);
+  performTagReplacement(newTags);
   performTagCleanUp(newTags);
   if (INDICATE_IMPORT_TAG && targetBooruData.importTag) {
     // site has a standardized tagging convention for imported images
@@ -118,6 +120,8 @@ async function importTags(imageID: string, booruData: BooruRecord): Promise<void
   const tags = (booruData.bor) ? (json as Twibooru.Api.Image).post.tags : (json as Philomena.Api.Image).image.tags;
   const fetchedTags = performTagFilter(tags);
   const tagPool = tagsToArray(tagInput.value);
+
+  performTagReplacement(fetchedTags);
 
   // append tags
   for (const tag of fetchedTags) {
