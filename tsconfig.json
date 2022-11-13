@@ -13,8 +13,7 @@
             "./node_modules/@types",
             "./typings.d.ts"
         ],
-        "declaration": true,
-        "declarationDir": "./types",
+        "declaration": false,
         "strict": false
     },
     "exclude": [

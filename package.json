@@ -9,8 +9,8 @@
     "homepage": "https://github.com/marktaiwan/Philomena-Importer",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "npx rollup --config rollup.config.js",
-        "watch": "npx rollup --config rollup.config.js --watch"
+        "build": "npx rollup --config rollup.config.js --bundleConfigAsCjs",
+        "watch": "npx rollup --config rollup.config.js --bundleConfigAsCjs --watch"
     },
     "devDependencies": {
         "@babel/cli": "^7.17.6",

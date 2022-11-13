@@ -37,7 +37,9 @@ export default args => {
     output: {
       file: path.format(outputFile),
       format: 'iife',
-      preferConst: true,
+      generatedCode: {
+        constBindings: true
+      },
     },
     external: id => (/^react(-dom)?$/).test(id),
     treeshake: true,
