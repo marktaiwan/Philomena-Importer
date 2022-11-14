@@ -10,7 +10,7 @@ import replace from '@rollup/plugin-replace';
 import typescriptPlugin from '@rollup/plugin-typescript';
 import typescript from 'typescript';
 
-import pkg from './package.json';
+import pkg from './package.json' assert {type: 'json'};
 
 const entryName = 'main';
 const tsEntry = `./src/${entryName}.ts`;

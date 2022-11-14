@@ -7,10 +7,11 @@
     "author": "Marker",
     "license": "MIT",
     "homepage": "https://github.com/marktaiwan/Philomena-Importer",
+    "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "npx rollup --config rollup.config.js --bundleConfigAsCjs",
-        "watch": "npx rollup --config rollup.config.js --bundleConfigAsCjs --watch"
+        "build": "npx rollup --config rollup.config.js",
+        "watch": "npx rollup --config rollup.config.js --watch"
     },
     "devDependencies": {
         "@babel/cli": "^7.19.3",
