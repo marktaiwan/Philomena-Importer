@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.9.6
+// @version     1.9.7
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -54,6 +54,7 @@
       cdnDomains: ['cdn.ponybooru.org'],
       uploadPage: '/images/new',
       importTag: siteName => `${siteName} import`,
+      markdown: true,
     },
     ponerpics: {
       primaryDomain: 'https://ponerpics.org',
@@ -803,10 +804,10 @@
       fileField.files = list.files;
       // dispatch change event to file input
       fileField.dispatchEvent(new Event('change'));
+      importButton.innerText = 'Import';
     } else {
       importButton.innerText = 'Error';
     }
-    importButton.innerText = 'Import';
   }
   async function importTags(imageID, booruData) {
     const tagInput = $('#image_tag_input, #tags-form_tag_input, #post_tag_input');
