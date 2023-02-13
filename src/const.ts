@@ -9,6 +9,7 @@ const boorus: Boorus = {
     cdnDomains: ['cdn.ponybooru.org'],
     uploadPage: '/images/new',
     importTag: siteName => `${siteName} import`,
+    markdown: true,
   },
   ponerpics: {
     primaryDomain: 'https://ponerpics.org',
