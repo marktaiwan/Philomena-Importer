@@ -1,10 +1,12 @@
+
 /* Shorthands  */
 
+type HTMLElementEvent<T extends HTMLElement = HTMLElement> = Event & {target: T};
 type SelectorRoot = Document | HTMLElement;
 
-function $<K extends keyof HTMLElementTagNameMap>(selector: K, root?: SelectorRoot): HTMLElementTagNameMap[K];
-function $<T extends HTMLElement>(selector: string, root?: SelectorRoot): T;
-function $(selector: string, root: SelectorRoot = document): HTMLElement {
+function $<K extends keyof HTMLElementTagNameMap>(selector: K, root?: SelectorRoot): HTMLElementTagNameMap[K] | null;
+function $<T extends HTMLElement>(selector: string, root?: SelectorRoot): T | null;
+function $(selector: string, root: SelectorRoot = document): HTMLElement | null {
   return root.querySelector(selector);
 }
 
@@ -32,15 +34,10 @@ type QueryVariableSet = {
   [key: string]: string,
 };
 function getQueryVariableAll(): QueryVariableSet {
-  const search = window.location.search;
-  if (search === '') return {};
-  const arr = search
-    .substring(1)
-    .split('&')
-    .map(string => string.split('='));
-  const dict = {};
-  for (const list of arr) {
-    dict[list[0]] = list[1];
+  const params = new URLSearchParams(window.location.search);
+  const dict: QueryVariableSet = {};
+  for (const [key, val] of params.entries()) {
+    dict[key] = val;
   }
   return dict;
 }
@@ -50,14 +47,42 @@ function getQueryVariable(key: string): string {
 }
 
 function makeQueryString(queries: QueryVariableSet): string {
-  return '?' + Object
-    .entries(queries)
-    .map(arr => arr.join('='))
-    .join('&');
+  const params = new URLSearchParams(queries);
+  return '?' + params.toString();
 }
 
 function escapeRegExp(str: string): string {
   return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+function onReadyFactory(): (fn: () => void) => void {
+  const callbacks: Array<() => void> = [];
+  document.addEventListener('DOMContentLoaded', () => callbacks.forEach(fn => fn()), {once: true});
+  return (fn): void => {
+    if (document.readyState == 'loading') {
+      callbacks.push(fn);
+    } else {
+      fn();
+    }
+  };
+}
+
+function debounce(fn: (...args: unknown[]) => unknown, delay: number): (...args: unknown[]) => void {
+  let timeout: number;
+  return (...args: unknown[]) => {
+    window.clearTimeout(timeout);
+    timeout = window.setTimeout(fn, delay, ...args);
+  };
+}
+
+function sleep(duration: number): Promise<void> {
+  return new Promise(resolve => window.setTimeout(resolve, duration));
+}
+
+function onLeftClick(callback: (event: MouseEvent) => void, root: SelectorRoot = document): void {
+  root.addEventListener('click', e => {
+    if (e instanceof MouseEvent && e.button === 0) callback(e);
+  });
 }
 
 export {
@@ -69,4 +94,11 @@ export {
   getQueryVariableAll,
   makeQueryString,
   escapeRegExp,
+  onReadyFactory,
+  debounce,
+  sleep,
+  onLeftClick,
+};
+export type {
+  HTMLElementEvent,
 };
