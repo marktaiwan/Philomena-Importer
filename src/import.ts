@@ -96,11 +96,10 @@ async function importImage(imageID: string, booruData: BooruRecord): Promise<voi
 
     // dispatch change event to file input
     fileField.dispatchEvent(new Event('change'));
+    importButton.innerText = 'Import';
   } else {
     importButton.innerText = 'Error';
   }
-
-  importButton.innerText = 'Import';
 }
 
 async function importTags(imageID: string, booruData: BooruRecord): Promise<void> {
