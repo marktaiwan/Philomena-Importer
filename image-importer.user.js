@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Derpibooru Image Importer
 // @description Import image and tags from Philomena-based boorus
-// @version     1.9.7
+// @version     1.9.8
 // @author      Marker
 // @license     MIT
 // @namespace   https://github.com/marktaiwan/
@@ -942,7 +942,7 @@
   }
   function initUI() {
     const content = $('#content'); // the closest parent element that persists after saving tags
-    const imageTarget = $('#image_target'); // used to check for image page
+    const imageTarget = $('#image_target, .image-target'); // used to check for image page
     const noThumb = $('#thumbnails-not-yet-generated'); // used to check for image page during image processing
     let scraperInput = $('#image_scraper_url, #scraper_url'); // image scraper field
     // runs on image pages
