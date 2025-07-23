@@ -400,7 +400,7 @@
           ? '[bq]' + quote.slice(0, -1) + '[/bq]\n'
           : '[bq]' + quote + '[/bq]';
       },
-      link: (href, title, text) => {
+      link: (href, _title, text) => {
         text = text.replaceAll('"', '[=="==]');
         return '"' + text + '":' + makeAbsolute(href, baseUrl);
       },

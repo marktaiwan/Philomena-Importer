@@ -5,10 +5,10 @@ function getImageInfo(url: string): {id: string, booruData: BooruRecord} {
   const domainRegexStr = concatDomains(boorus, 'booruDomains');
   const cdnRegexStr = concatDomains(boorus, 'cdnDomains');
   const regex = new RegExp(
-    'https?://(?:www\\.)?(?:' +
-    `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
-    `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
-    ')', 'i');
+    'https?://(?:www\\.)?(?:'
+    + `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|`
+    + `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)`
+    + ')', 'i');
 
   const result = regex.exec(url);
   if (result === null) {
