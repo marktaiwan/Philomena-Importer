@@ -304,7 +304,7 @@
     return makeRequest(requestURL).then(resp => resp.response);
   }
   function makeRequest(url, responseType = 'json', onprogress, button) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
         context: button,
         url,
@@ -314,10 +314,7 @@
         },
         responseType,
         onload: resolve,
-        onerror: e => {
-          e.context.innerText = 'Error';
-          console.log(e);
-        },
+        onerror: reject,
         onprogress,
       });
     });
@@ -327,7 +324,7 @@
   const noop = () => {};
   const useDefault = () => false;
   const wrap = (text, openTag, closeTag) => {
-    closeTag ?? (closeTag = openTag);
+    closeTag ??= openTag;
     const multiline = /\n/.test(text);
     if (multiline) {
       openTag = '[' + openTag;
@@ -572,8 +569,8 @@
       {textile: {open: '-'}, markdown: {open: '~~'}},
     ];
     for (const {textile, markdown} of tagMapping) {
-      textile.close ?? (textile.close = textile.open);
-      markdown.close ?? (markdown.close = markdown.open);
+      textile.close ??= textile.open;
+      markdown.close ??= markdown.open;
       text = text.replace(
         textileRegExpMaker(textile.open, textile.close, 'g'),
         (_matched, p1, p2) => `${markdown.open}${p1 || p2}${markdown.close}`,
@@ -603,8 +600,8 @@
     ];
     // Markedjs doesn't support spoiler and underline
     for (const {markdown, textile} of tagMapping) {
-      markdown.close ?? (markdown.close = markdown.open);
-      textile.close ?? (textile.close = textile.open);
+      markdown.close ??= markdown.open;
+      textile.close ??= textile.open;
       text = text.replace(
         markdownRegExpMaker(markdown.open, markdown.close, 'g'),
         (_matched, p1) => {
@@ -797,7 +794,15 @@
       'blob',
       progressCallback,
       importButton,
-    ).then(resp => (resp.status == 200 ? resp.response : null));
+    )
+      .then(resp => (resp.status == 200 ? resp.response : null))
+      .catch(e => {
+        const context = e?.context;
+        if (context instanceof HTMLInputElement) {
+          context.innerText = 'Error';
+        }
+        console.log(e);
+      });
     if (imgBlob !== null) {
       // create a file list to be assigned to input
       const list = new DataTransfer();

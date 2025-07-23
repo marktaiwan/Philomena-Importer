@@ -85,7 +85,14 @@ async function importImage(imageID: string, booruData: BooruRecord): Promise<voi
     'blob',
     progressCallback,
     importButton
-  ).then(resp => (resp.status == 200) ? resp.response : null);
+  ).then(resp => (resp.status == 200) ? resp.response : null)
+    .catch(e => {
+      const context = e?.context;
+      if (context instanceof HTMLInputElement) {
+        context.innerText = 'Error';
+      }
+      console.log(e);
+    });
 
   if (imgBlob !== null) {
     // create a file list to be assigned to input

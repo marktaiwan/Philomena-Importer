@@ -8,14 +8,14 @@ function fetchMeta(imageID: string, booruData: BooruRecord): Promise<Philomena.A
   return makeRequest(requestURL).then(resp => resp.response);
 }
 
-function makeRequest(
+function makeRequest<T>(
   url: string,
-  responseType: GM_Types.XHRDetails<typeof button>['responseType'] = 'json',
-  onprogress?: GM_Types.Listener<GM_Types.XHRProgress<typeof button>>,
-  button?: HTMLElement,
-): Promise<GM_Types.XHRResponse<typeof button>> {
-  return new Promise(resolve => {
-    GM_xmlhttpRequest<typeof button>({
+  responseType: GM_Types.XHRDetails<T>['responseType'] = 'json',
+  onprogress?: GM_Types.Listener<GM_Types.XHRProgress<T>>,
+  button?: T,
+): Promise<GM_Types.XHRResponse<T>> {
+  return new Promise((resolve, reject) => {
+    GM_xmlhttpRequest<T>({
       context: button,
       url,
       method: 'GET',
@@ -24,10 +24,7 @@ function makeRequest(
       },
       responseType,
       onload: resolve,
-      onerror: e => {
-        e.context.innerText = 'Error';
-        console.log(e);
-      },
+      onerror: reject,
       onprogress
     });
   });
