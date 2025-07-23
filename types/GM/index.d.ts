@@ -1,7 +1,10 @@
 /*
 https://github.com/vannhi/userscript-typescript-webpack/blob/master/tampermonkey-module.d.ts
 */
-/* eslint-disable @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any */
+/* eslint-disable
+  @typescript-eslint/no-unsafe-function-type,
+  @typescript-eslint/no-explicit-any
+*/
 declare const unsafeWindow: typeof window;
 
 declare const GM_info: {
@@ -14,23 +17,23 @@ declare const GM_info: {
   isIncognito: boolean,
   downloadMode: 'native' | 'disabled' | 'browser',
   script: {
-    author?: string,
-    description?: string,
-    excludes: string[],
-    homepage?: string,
-    icon?: string,
-    icon64?: string,
-    includes?: string[],
-    lastModified: number,
-    matches: string[],
-    name: string,
-    namespace?: string,
-    position: number,
+    'author'?: string,
+    'description'?: string,
+    'excludes': string[],
+    'homepage'?: string,
+    'icon'?: string,
+    'icon64'?: string,
+    'includes'?: string[],
+    'lastModified': number,
+    'matches': string[],
+    'name': string,
+    'namespace'?: string,
+    'position': number,
     'run-at': string,
-    resources: string[],
-    unwrap: boolean,
-    version: string,
-    options: {
+    'resources': string[],
+    'unwrap': boolean,
+    'version': string,
+    'options': {
       awareOfChrome: boolean,
       run_at: string,
       noframes?: boolean,
@@ -59,9 +62,9 @@ declare function GM_deleteValue(name: string): void;
 
 declare function GM_listValues(): string[];
 
-declare function GM_addValueChangeListener(name: string, listener: GM_Types.ValueChangeListener): number;
+declare function GM_addValueChangeListener(name: string, listener: GM_Types.ValueChangeListener): number | string;  // Tampermonkey: number, Violentmonkey: string
 
-declare function GM_removeValueChangeListener(listenerId: number): void;
+declare function GM_removeValueChangeListener(listenerId: number | string): void; // Tampermonkey: number, Violentmonkey: string
 
 declare function GM_setValue(name: string, value: any): void;
 
@@ -89,12 +92,12 @@ declare function GM_download(url: string, filename: string): GM_Types.AbortHandl
 
 declare function GM_getTab(callback: (obj: object) => any): void;
 declare function GM_saveTab(obj: object): void;
-declare function GM_getTabs(callback: (objs: {[key: number]: object }) => any): void;
+declare function GM_getTabs(callback: (objs: {[key: number]: object}) => any): void;
 
 declare function GM_notification(details: GM_Types.NotificationDetails, ondone: Function): void;
 declare function GM_notification(text: string, title: string, image: string, onclick: Function): void;
 
-declare function GM_setClipboard(data: string, info?: string | {type?: string, minetype?: string }): void;
+declare function GM_setClipboard(data: string, info?: string | {type?: string, minetype?: string}): void;
 
 declare namespace GM_Types {
 
@@ -138,8 +141,8 @@ declare namespace GM_Types {
 
   interface XHRDetails<CONTEXT_TYPE> {
     method?: 'GET' | 'HEAD' | 'POST' | 'PUT';
-    url?: string;
-    headers?: {readonly [key: string]: string };
+    url: string;
+    headers?: {readonly [key: string]: string};
     data?: string;
     binary?: boolean;
     timeout?: number;

@@ -10,7 +10,7 @@ import replace from '@rollup/plugin-replace';
 import typescriptPlugin from '@rollup/plugin-typescript';
 import typescript from 'typescript';
 
-import pkg from './package.json' assert {type: 'json'};
+import pkg from './package.json' with {type: 'json'};
 
 const entryName = 'main';
 const tsEntry = `./src/${entryName}.ts`;
@@ -18,6 +18,11 @@ const jsEntry = `./src/${entryName}.js`;
 const defaultEntryPath = fs.existsSync(tsEntry) ? tsEntry : jsEntry;
 
 export default args => {
+
+  /**
+   * Include `--input inputFile.js` in the build or watch command
+   * to enable simple mode.
+   */
   args.i ??= args.input;
   const simple = Boolean(args.i);
   const inputFile = {...path.parse(args.i ?? defaultEntryPath), base: ''};
@@ -46,17 +51,17 @@ export default args => {
     plugins: [
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
-        ENVIRONMENT: JSON.stringify('production'),
-        preventAssignment: true
+        'ENVIRONMENT': JSON.stringify('production'),
+        'preventAssignment': true
       }),
       nodeResolve({extensions: ['.js', '.ts', '.tsx']}),
       typescriptPlugin({typescript}),
       commonjs({
         include: [
-          'node_modules/**'
+          'node_modules/**',
         ],
         exclude: [
-          'node_modules/process-es6/**'
+          'node_modules/process-es6/**',
         ]
       }),
       babel({babelHelpers: 'bundled'}),

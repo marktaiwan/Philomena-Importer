@@ -1,4 +1,3 @@
-
 interface SettingBase {
   title: string;
   key: string;
@@ -55,4 +54,4 @@ declare function ConfigManager(
   scriptName: string,
   scriptId: string,
   scriptDescription?: string,
-): ConfigObject
+): ConfigObject;

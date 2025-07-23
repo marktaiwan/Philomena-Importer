@@ -25,6 +25,7 @@
 // @require     https://cdn.jsdelivr.net/npm/marked@2.0.3/marked.min.js
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
+
 (function () {
   'use strict';
 
@@ -137,7 +138,7 @@
   const config = ConfigManager(
     'Philomena Image Importer',
     SCRIPT_ID,
-    'Import image and tags from Philomena-based boorus.'
+    'Import image and tags from Philomena-based boorus.',
   );
   config.registerSetting({
     title: 'Quick upload',
@@ -164,7 +165,7 @@
   const descFieldset = config.addFieldset(
     'Description',
     'indicate_fieldset',
-    'Add import message to image description. Prefix the description with a link to the original post.'
+    'Add import message to image description. Prefix the description with a link to the original post.',
   );
   descFieldset.registerSetting({
     title: 'Enable import message',
@@ -254,7 +255,7 @@
         `(?<domain>${domainRegexStr})/(?:images/|posts/)?(?<domID>\\d+)(?:\\?.*|/|\\.html)?|` +
         `(?<cdn>${cdnRegexStr})/img/(?:view/|download/)?\\d+/\\d+/\\d+/(?<cdnID>\\d+)` +
         ')',
-      'i'
+      'i',
     );
     const result = regex.exec(url);
     if (result === null) {
@@ -425,7 +426,7 @@
         };
         token.text = text.replace(
           /&(?:amp|lt|gt|quot|#39);/g,
-          (...cap) => escapeReplacements[cap[0]]
+          (...cap) => escapeReplacements[cap[0]],
         );
       }
       if (token.type == 'space') {
@@ -444,7 +445,7 @@
       `(?<![a-zA-Z0-9])${open}(\\S(?:.*?\\S)??)${close}(?![a-zA-Z0-9])` +
         '|' +
         `\\[${open}(?!${close})((?:.|\\n)+?)${close}\\]`,
-      flag
+      flag,
     );
   }
   function textileToMarkdown(text) {
@@ -542,7 +543,7 @@
       // putting it all together
       text = lines
         .map(line =>
-          line.nestLevel > 0 ? '> '.repeat(line.nestLevel) + line.content : line.content
+          line.nestLevel > 0 ? '> '.repeat(line.nestLevel) + line.content : line.content,
         )
         .join('\n');
       return text;
@@ -550,15 +551,15 @@
     // links
     text = text.replace(
       /"(.+?)":((?:\/|\w+:\/\/)(?:\w|\/|\)|(?:\S(?!$|[\n ])))+)/g,
-      (matched, text, path) => `[${text}](${path})`
+      (_matched, text, path) => `[${text}](${path})`,
     );
     // image embeds with links
     text = text.replace(
       /!((?:\/|\w+:\/\/)\S+)!:((?:\/|\w+:\/\/)(?:\w|\/|\)|(?:\S(?!$|[\n ])))+)/g,
-      (matched, img, link) => `[![](${img})](${link})`
+      (_matched, img, link) => `[![](${img})](${link})`,
     );
     // image embed with no links
-    text = text.replace(/!((?:https?:\/)?\/\S+)!/g, (matched, url) => `![](${url})`);
+    text = text.replace(/!((?:https?:\/)?\/\S+)!/g, (_matched, url) => `![](${url})`);
     // bold, italic, underline, spoiler, code, strike, noParse
     const tagMapping = [
       {textile: {open: '[==', close: '==]'}, markdown: {open: ''}},
@@ -575,14 +576,14 @@
       markdown.close ?? (markdown.close = markdown.open);
       text = text.replace(
         textileRegExpMaker(textile.open, textile.close, 'g'),
-        (matched, p1, p2) => `${markdown.open}${p1 || p2}${markdown.close}`
+        (_matched, p1, p2) => `${markdown.open}${p1 || p2}${markdown.close}`,
       );
     }
     // escape > at the beginning of a line
     text = text.replace(/^>/gm, '\\>');
     // superscript
-    text = text.replace(textileRegExpMaker('^', '^', 'g'), (matched, p1, p2) =>
-      (p1 || p2).replace(/\b\w/g, char => '^' + char)
+    text = text.replace(textileRegExpMaker('^', '^', 'g'), (_matched, p1, p2) =>
+      (p1 || p2).replace(/\b\w/g, char => '^' + char),
     );
     // quotes
     text = convertQuotes(text);
@@ -606,7 +607,7 @@
       textile.close ?? (textile.close = textile.open);
       text = text.replace(
         markdownRegExpMaker(markdown.open, markdown.close, 'g'),
-        (matched, p1) => {
+        (_matched, p1) => {
           let open = textile.open;
           let close = textile.close;
           if (/\n/.test(p1) && !textile.multiline) {
@@ -614,7 +615,7 @@
             close = close + ']';
           }
           return open + p1 + close;
-        }
+        },
       );
     }
     text = markedjs(text, baseUrl);
@@ -626,7 +627,7 @@
     imageID,
     sourceBooruData,
     targetBooruData,
-    imgJson
+    imgJson,
   ) {
     const {primaryDomain, prettyName} = sourceBooruData;
     const emptyDesc = originalDescription === '';
@@ -637,22 +638,22 @@
         // image links
         desc = desc.replace(
           /(?:>>(\d+))([pts])?/g,
-          (matched, id, postfix) =>
-            `[>>[${prettyName}]${[id, postfix].join('')}](${primaryDomain}/${imgPath}/${id})`
+          (_matched, id, postfix) =>
+            `[>>[${prettyName}]${[id, postfix].join('')}](${primaryDomain}/${imgPath}/${id})`,
         );
       } else {
         // rewrite in-site links
         // match links begin with "/" but not "//"
         desc = desc.replace(
           /(".+?"):(?:\/)(?!\/)/g,
-          (matched, text) => `${text}:${primaryDomain}/`
+          (_matched, text) => `${text}:${primaryDomain}/`,
         );
         // rewrite image links
         // match image links, turn embeds into links as well.
         desc = desc.replace(
           /(?:>>(\d+))([pts])?/g,
-          (matched, id, postfix) =>
-            `">>[${prettyName}]${[id, postfix].join('')}":${primaryDomain}/${imgPath}/${id}`
+          (_matched, id, postfix) =>
+            `">>[${prettyName}]${[id, postfix].join('')}":${primaryDomain}/${imgPath}/${id}`,
         );
       }
     }
@@ -764,8 +765,8 @@
     $('#image_source_url, #post_source_url').value = source
       ? source
       : ORIGIN_SOURCE
-      ? `${primaryDomain}/${imgPath}/${imageID}`
-      : '';
+        ? `${primaryDomain}/${imgPath}/${imageID}`
+        : '';
     // add tags
     const newTags = performTagFilter(tags);
     performTagReplacement(newTags);
@@ -782,7 +783,7 @@
       imageID,
       booruData,
       targetBooruData,
-      metadata
+      metadata,
     );
     // revert tag editor
     if (fancyEditor) {
@@ -795,7 +796,7 @@
       makeAbsolute(fileURL, primaryDomain),
       'blob',
       progressCallback,
-      importButton
+      importButton,
     ).then(resp => (resp.status == 200 ? resp.response : null));
     if (imgBlob !== null) {
       // create a file list to be assigned to input
@@ -923,9 +924,7 @@
     for (const booru of Object.values(boorus)) {
       const {prettyName, primaryDomain, uploadPage} = booru;
       if (!uploadPage || isSameSite(booru.booruDomains)) continue;
-      const sourceUrl = `${sourceBooru.primaryDomain}/${
-        sourceBooru.bor ? 'posts' : 'images'
-      }/${imageId}`;
+      const sourceUrl = `${sourceBooru.primaryDomain}/${sourceBooru.bor ? 'posts' : 'images'}/${imageId}`;
       const url = new URL(primaryDomain + uploadPage);
       url.searchParams.append('import_from', sourceUrl);
       nav.append(createMenuItem(prettyName, url.toString(), `Upload this image to ${prettyName}`));

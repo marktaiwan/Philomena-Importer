@@ -184,7 +184,7 @@ const SUB_DEFAULT = config.getEntry('sub_default') as boolean;
 /*
  *  Perform coding surgery to change input field into textarea
  */
-const oldInput = $('input', tagEntry);
+const oldInput = $('input', tagEntry)!;
 const newText = create('textarea');
 newText.classList.add('input');
 newText.style.height = '100px';

@@ -120,18 +120,18 @@ function textileToMarkdown(text: string): string {
   // links
   text = text.replace(
     /"(.+?)":((?:\/|\w+:\/\/)(?:\w|\/|\)|(?:\S(?!$|[\n ])))+)/g,
-    (matched, text, path) => `[${text}](${path})`
+    (_matched, text, path) => `[${text}](${path})`
   );
 
   // image embeds with links
   text = text.replace(
     /!((?:\/|\w+:\/\/)\S+)!:((?:\/|\w+:\/\/)(?:\w|\/|\)|(?:\S(?!$|[\n ])))+)/g,
-    (matched, img, link) => `[![](${img})](${link})`);
+    (_matched, img, link) => `[![](${img})](${link})`);
 
   // image embed with no links
   text = text.replace(
     /!((?:https?:\/)?\/\S+)!/g,
-    (matched, url) => `![](${url})`
+    (_matched, url) => `![](${url})`
   );
 
   // bold, italic, underline, spoiler, code, strike, noParse
@@ -150,7 +150,7 @@ function textileToMarkdown(text: string): string {
     markdown.close ??= markdown.open;
     text = text.replace(
       textileRegExpMaker(textile.open, textile.close, 'g'),
-      (matched, p1, p2) => `${markdown.open}${p1 || p2}${markdown.close}`
+      (_matched, p1, p2) => `${markdown.open}${p1 || p2}${markdown.close}`
     );
   }
 
@@ -160,7 +160,7 @@ function textileToMarkdown(text: string): string {
   // superscript
   text = text.replace(
     textileRegExpMaker('^', '^', 'g'),
-    (matched, p1, p2) => (p1 || p2).replace(/\b\w/g, char => '^' + char)
+    (_matched, p1, p2) => (p1 || p2).replace(/\b\w/g, char => '^' + char)
   );
 
   // quotes
@@ -189,7 +189,7 @@ function markdownToTextile(text: string, baseUrl = ''): string {
     textile.close ??= textile.open;
     text = text.replace(
       markdownRegExpMaker(markdown.open, markdown.close, 'g'),
-      (matched, p1) => {
+      (_matched, p1) => {
         let open = textile.open;
         let close = textile.close;
         if ((/\n/).test(p1) && !textile.multiline) {

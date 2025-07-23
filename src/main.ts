@@ -51,7 +51,7 @@ function initImageImport(): void {
   importButton.style.width = '100px';
   scraperInput.after(importButton);
 
-  importButton.addEventListener('click', (e) => {
+  importButton.addEventListener('click', e => {
     e.stopPropagation();
     e.preventDefault();
 

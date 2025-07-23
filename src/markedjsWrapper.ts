@@ -2,7 +2,7 @@ import {makeAbsolute} from './util';
 declare const marked;
 
 const rules = marked.Lexer.rules;
-const noop = (): void => {/* noop */};
+const noop = (): void => { /* noop */ };
 const useDefault = (): false => false;
 const wrap = (text: string, openTag: string, closeTag?: string): string => {
   closeTag ??= openTag;
@@ -88,7 +88,7 @@ function markedjs(text: string, baseUrl: string): string {
       text = text.replaceAll('"', '[=="==]');
       return '"' + text + '":' + makeAbsolute(href, baseUrl);
     },
-    image: (href) => wrap(makeAbsolute(href, baseUrl), '!'),
+    image: href => wrap(makeAbsolute(href, baseUrl), '!'),
     codespan: text => wrap(text, '@'),
     del: text => wrap(text, '-'),
     strong: text => wrap(text, '*'),

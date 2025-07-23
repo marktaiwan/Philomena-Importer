@@ -1,6 +1,6 @@
 import {
   DEFAULT_TAG_BLACKLIST, config, LINK_FIX, INDICATE_IMPORT,
-  ORIG_UPLOAD_DATE, ORIG_UPLOADER, TAG_FILTER, SUB_DEFAULT
+  ORIG_UPLOAD_DATE, ORIG_UPLOADER, TAG_FILTER, SUB_DEFAULT,
 } from './const';
 import {textileToMarkdown, markdownToTextile} from './markupTransform';
 import type {Philomena, Twibooru} from '../types/BooruApi';
@@ -22,20 +22,20 @@ function processDescription(
       // image links
       desc = desc.replace(
         /(?:>>(\d+))([pts])?/g,
-        (matched, id, postfix) => `[>>[${prettyName}]${[id, postfix].join('')}](${primaryDomain}/${imgPath}/${id})`
+        (_matched, id, postfix) => `[>>[${prettyName}]${[id, postfix].join('')}](${primaryDomain}/${imgPath}/${id})`
       );
     } else {
       // rewrite in-site links
       // match links begin with "/" but not "//"
       desc = desc.replace(
         /(".+?"):(?:\/)(?!\/)/g,
-        (matched, text) => `${text}:${primaryDomain}/`
+        (_matched, text) => `${text}:${primaryDomain}/`
       );
       // rewrite image links
       // match image links, turn embeds into links as well.
       desc = desc.replace(
         /(?:>>(\d+))([pts])?/g,
-        (matched, id, postfix) => `">>[${prettyName}]${[id, postfix].join('')}":${primaryDomain}/${imgPath}/${id}`
+        (_matched, id, postfix) => `">>[${prettyName}]${[id, postfix].join('')}":${primaryDomain}/${imgPath}/${id}`
       );
 
     }
